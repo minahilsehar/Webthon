@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 440" role="img">
+  <rect x="92" y="70" width="353" height="300" rx="16" fill="#d3dec9"/>
+  <rect x="112" y="48" width="353" height="300" rx="16" fill="#fff" stroke="#dce4d9" stroke-width="2"/>
+  <path d="M128 48h321a16 16 0 0 1 16 16v31H112V64a16 16 0 0 1 16-16Z" fill="#edf2e8"/>
+  <circle cx="133" cy="79" r="4" fill="#95b476"/>
+  <circle cx="148" cy="79" r="4" fill="#c6d59f"/>
+  <circle cx="163" cy="79" r="4" fill="#e1c98a"/>
+  <rect x="142" y="119" width="93" height="9" rx="4.5" fill="#245c4e"/>
+  <rect x="142" y="138" width="188" height="6" rx="3" fill="#e4e9e2"/>
+  <rect x="142" y="151" width="151" height="6" rx="3" fill="#e4e9e2"/>
+  <rect x="142" y="181" width="282" height="1" fill="#e7ebe5"/>
+  <circle cx="153" cy="205" r="7" fill="#fff" stroke="#8aa77b" stroke-width="2"/>
+  <rect x="171" y="202" width="141" height="6" rx="3" fill="#b9c5ba"/>
+  <circle cx="153" cy="233" r="7" fill="#245c4e"/>
+  <path d="m150 233 2 2 4-5" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="1.5"/>
+  <rect x="171" y="230" width="177" height="6" rx="3" fill="#7f9a77"/>
+  <circle cx="153" cy="261" r="7" fill="#fff" stroke="#8aa77b" stroke-width="2"/>
+  <rect x="171" y="258" width="122" height="6" rx="3" fill="#b9c5ba"/>
+  <rect x="142" y="293" width="104" height="25" rx="4" fill="#245c4e"/>
+  <path d="M256 306h118" stroke="#e5ebe3" stroke-linecap="round" stroke-width="6"/>
+  <circle cx="423" cy="127" r="55" fill="#edf3df"/>
+  <circle cx="423" cy="127" r="38" fill="#fff" stroke="#cad8ba" stroke-width="3"/>
+  <path d="M423 105v23l15 9" fill="none" stroke="#59805b" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+  <circle cx="423" cy="127" r="3" fill="#59805b"/>
+  <path d="m396 332 76-138c4-8 16-2 12 6l-74 139-22 12 8-19Z" fill="#e6c782"/>
+  <path d="m388 351 8-19 14 7-22 12Z" fill="#667a69"/>
+  <path d="m469 194 15 8 4-8c4-8-8-14-12-6l-7 6Z" fill="#c88666"/>
+  <path d="M91 354h400" stroke="#b9c6b5" stroke-linecap="round" stroke-width="2"/>
+  <path d="M75 354h6m426 0h8" stroke="#7b9877" stroke-linecap="round" stroke-width="3"/>
+  <circle cx="89" cy="173" r="4" fill="#a5bb8b"/>
+  <circle cx="495" cy="270" r="5" fill="#d6b975"/>
+  <path d="m485 86 5 5 9-11" fill="none" stroke="#7c9b68" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+</svg>

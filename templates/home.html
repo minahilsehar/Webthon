@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Examflow — Online exams, thoughtfully delivered{% endblock %}
+{% block content %}
+<main id="main">
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-copy">
+                <p class="eyebrow"><span class="eyebrow-dot"></span> A calmer way to assess</p>
+                <h1>Make room for<br>what learners <em>know.</em></h1>
+                <p class="hero-intro">A considered online examination experience for the people who create assessments and the people who take them.</p>
+                {% if user.is_authenticated %}
+                    <div class="welcome-note">Signed in as <strong>{{ user.get_full_name|default:user.username }}</strong> · {{ user.get_role_display }}</div>
+                    <a class="button button-primary" href="#platform">Explore the platform <span aria-hidden="true">→</span></a>
+                {% else %}
+                    <a class="button button-primary" href="{% url 'login' %}">Sign in to your account <span aria-hidden="true">→</span></a>
+                {% endif %}
+                <p class="hero-caption">One secure place for thoughtful assessment.</p>
+            </div>
+            <div class="hero-art">
+                <img src="{% static 'images/exam-illustration.svg' %}" alt="Illustration of an exam sheet, timer, and pencil">
+                <div class="art-caption"><span class="caption-line"></span><span>Focus on the work, not the setup.</span></div>
+            </div>
+        </div>
+        <div class="hero-bottom container">
+            <span>DESIGNED AROUND PEOPLE</span>
+            <span class="hero-bottom-line"></span>
+            <span>01 — 03</span>
+        </div>
+    </section>
+
+    <section class="section platform-section" id="platform">
+        <div class="container">
+            <div class="section-heading">
+                <p class="eyebrow">One connected experience</p>
+                <h2>Every role has a<br><em>clear next step.</em></h2>
+                <p>Purposeful workflows help each person find what they need, while access stays tied to their role.</p>
+            </div>
+            <div class="role-grid">
+                <article class="role-card">
+                    <span class="role-index">01 / ADMINISTRATOR</span>
+                    <div class="role-icon role-icon-admin" aria-hidden="true">A</div>
+                    <h3>Keep the platform in good order.</h3>
+                    <p>Manage accounts and role access from a central administration area.</p>
+                    <span class="role-arrow" aria-hidden="true">↗</span>
+                </article>
+                <article class="role-card role-card-featured">
+                    <span class="role-index">02 / EXAMINER</span>
+                    <div class="role-icon role-icon-examiner" aria-hidden="true">E</div>
+                    <h3>Build assessments with care.</h3>
+                    <p>Prepare examinations, organize candidates, and review outcomes.</p>
+                    <span class="role-arrow" aria-hidden="true">↗</span>
+                </article>
+                <article class="role-card">
+                    <span class="role-index">03 / CANDIDATE</span>
+                    <div class="role-icon role-icon-candidate" aria-hidden="true">C</div>
+                    <h3>Focus on showing what you know.</h3>
+                    <p>Find assigned assessments and see your own published results.</p>
+                    <span class="role-arrow" aria-hidden="true">↗</span>
+                </article>
+            </div>
+            <p class="section-footnote"><span aria-hidden="true">✳</span> Access is checked by the server, not just by what appears on screen.</p>
+        </div>
+    </section>
+
+    <section class="section process-section" id="how-it-works">
+        <div class="container process-grid">
+            <div class="process-intro">
+                <p class="eyebrow">A thoughtful flow</p>
+                <h2>From preparation<br>to <em>understanding.</em></h2>
+                <p>Assessment should feel manageable at every step. The system is designed around a clear, reviewable journey.</p>
+                <a class="text-link" href="{% url 'login' %}">Continue to sign in <span aria-hidden="true">→</span></a>
+            </div>
+            <ol class="steps-list">
+                <li><span class="step-number">01</span><div><h3>Prepare</h3><p>Examiners configure an assessment and choose its questions and schedule.</p></div><span class="step-mark" aria-hidden="true">↗</span></li>
+                <li><span class="step-number">02</span><div><h3>Participate</h3><p>Eligible candidates follow the instructions and complete their attempt.</p></div><span class="step-mark" aria-hidden="true">↗</span></li>
+                <li><span class="step-number">03</span><div><h3>Review</h3><p>Responses are evaluated and results are shared when they are ready.</p></div><span class="step-mark" aria-hidden="true">↗</span></li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="principles-section" id="principles">
+        <div class="container principles-grid">
+            <div>
+                <p class="eyebrow">Built on trust</p>
+                <h2>Fairness is in<br>the <em>details.</em></h2>
+            </div>
+            <div class="principles-copy">
+                <p>Exams deserve reliable timing, clear feedback, and careful handling of personal information. We are building toward an experience that supports those principles without making promises the software cannot yet keep.</p>
+                <div class="principle-tags"><span>Privacy-minded</span><span>Accessible by design</span><span>Transparent review</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="closing-section">
+        <div class="container closing-inner">
+            <div><p class="eyebrow">Your next step</p><h2>Ready when<br><em>you are.</em></h2></div>
+            <a class="button button-light" href="{% url 'login' %}">Go to sign in <span aria-hidden="true">→</span></a>
+            <span class="closing-stamp" aria-hidden="true">EF<br>—<br>01</span>
+        </div>
+    </section>
+</main>
+{% endblock %}

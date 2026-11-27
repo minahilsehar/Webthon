@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7f2">
+    <title>{% block title %}Examflow{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/mark.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'home' %}" aria-label="Examflow home">
+                <img src="{% static 'images/mark.svg' %}" alt="" width="34" height="34">
+                <span>examflow<span class="brand-period">.</span></span>
+            </a>
+            <div class="desktop-navigation">{% include "includes/navigation.html" %}</div>
+            <details class="mobile-navigation">
+                <summary aria-label="Toggle navigation"><span></span><span></span><span></span></summary>
+                {% include "includes/navigation.html" %}
+            </details>
+        </div>
+    </header>
+    {% block content %}{% endblock %}
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <a class="brand brand-footer" href="{% url 'home' %}">
+                <img src="{% static 'images/mark.svg' %}" alt="" width="28" height="28">
+                <span>examflow<span class="brand-period">.</span></span>
+            </a>
+            <p>Clearer exams. More confident candidates.</p>
+            <span class="footer-note">Built for fair assessment.</span>
+        </div>
+    </footer>
+</body>
+</html>

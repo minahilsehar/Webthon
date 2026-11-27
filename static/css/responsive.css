@@ -1,0 +1,66 @@
+@media (min-width: 761px) and (max-width: 1100px) {
+    .container { width: calc(100% - 56px); }
+    .hero h1 { font-size: clamp(48px, 5.2vw, 62px); }
+    .process-grid { gap: 55px; }
+    .role-card { padding-inline: 19px; }
+    .closing-stamp { right: 110px; }
+}
+
+@media (max-width: 760px) {
+    .container { width: min(100% - 40px, 560px); }
+    .header-inner { min-height: 66px; }
+    .desktop-navigation { display: none; }
+    .mobile-navigation { position: relative; display: block; }
+    .mobile-navigation > summary { display: flex; width: 42px; height: 42px; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 3px; list-style: none; cursor: pointer; }
+    .mobile-navigation > summary::-webkit-details-marker { display: none; }
+    .mobile-navigation > summary span { width: 17px; height: 1.5px; background: var(--ink); }
+    .mobile-navigation:not([open]) > .site-nav { display: none; }
+    .mobile-navigation[open] > .site-nav { position: absolute; top: 52px; right: 0; display: flex; min-width: 220px; padding: 16px; flex-direction: column; align-items: stretch; gap: 0; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 14px 28px rgb(26 56 44 / 12%); }
+    .mobile-navigation[open] .site-nav > a:not(.button), .mobile-navigation[open] .nav-user { padding: 12px 5px; }
+    .mobile-navigation[open] .site-nav form { padding: 8px 0 0; }
+    .mobile-navigation[open] .site-nav .button { width: 100%; }
+    .hero { padding-top: 42px; }
+    .hero-grid { min-height: auto; grid-template-columns: 1fr; gap: 0; }
+    .hero-copy { padding: 10px 0 8px; }
+    .hero h1 { font-size: clamp(48px, 12vw, 68px); }
+    .hero-intro { max-width: 440px; font-size: 14px; }
+    .hero-art { min-height: 310px; padding: 0 0 36px; }
+    .hero-art::before { top: 2%; right: 4%; width: 84%; height: 87%; }
+    .hero-art img { max-height: 330px; }
+    .art-caption { bottom: 12px; }
+    .section { padding: 72px 0; }
+    .section-heading { grid-template-columns: 1fr; gap: 18px; margin-bottom: 30px; }
+    .section-heading h2, .process-intro h2, .principles-grid h2 { font-size: 42px; }
+    .section-heading > p:last-child { max-width: 420px; }
+    .role-grid { grid-template-columns: 1fr; gap: 10px; }
+    .role-card { min-height: 220px; }
+    .process-grid, .principles-grid { grid-template-columns: 1fr; gap: 40px; }
+    .process-intro > p:not(.eyebrow) { margin-top: 17px; }
+    .principles-section { padding: 70px 0; }
+    .closing-inner { min-height: 240px; gap: 15px; }
+    .closing-inner h2 { font-size: 39px; }
+    .closing-inner > .button { z-index: 1; padding-inline: 16px; gap: 9px; }
+    .closing-stamp { right: 15%; font-size: 82px; }
+    .footer-inner { min-height: 105px; flex-wrap: wrap; justify-content: flex-start; gap: 8px 20px; padding-block: 18px; }
+    .footer-inner p { margin-left: auto; }
+    .footer-note { width: 100%; }
+}
+
+@media (max-width: 420px) {
+    .container { width: calc(100% - 32px); }
+    .hero { padding-top: 33px; }
+    .hero h1 { letter-spacing: -2px; }
+    .hero-art { min-height: 255px; }
+    .hero-bottom { font-size: 8px; }
+    .role-card { padding-inline: 20px; }
+    .steps-list li { grid-template-columns: 33px 1fr 16px; gap: 10px; }
+    .closing-inner { min-height: 220px; }
+    .closing-inner h2 { font-size: 33px; }
+    .closing-inner > .button { min-height: 46px; font-size: 11px; }
+    .footer-inner p { width: 100%; margin-left: 0; }
+    .login-card { padding: 30px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

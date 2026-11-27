@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Examflow{% endblock %}
+{% block content %}
+<main id="main" class="login-page">
+    <section class="login-card">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Sign in to<br><em>continue.</em></h1>
+        <p class="login-intro">Use the account provided by your administrator.</p>
+        {% if form.errors %}
+            <p class="form-error" role="alert">Those credentials could not be verified. Please try again.</p>
+        {% endif %}
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <label for="id_username">Username</label>
+            <input id="id_username" name="username" type="text" autocomplete="username" required autofocus>
+            <label for="id_password">Password</label>
+            <input id="id_password" name="password" type="password" autocomplete="current-password" required>
+            <button class="button button-primary" type="submit">Sign in <span aria-hidden="true">→</span></button>
+        </form>
+        <a class="text-link login-back" href="{% url 'home' %}">← Back to home</a>
+    </section>
+</main>
+{% endblock %}
