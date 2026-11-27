@@ -57,6 +57,19 @@ Open `http://127.0.0.1:8000/` for the landing page. Sign-in is at `/accounts/log
 
 The `.env` file is local-only and ignored by Git. `COOKIE_SECURE=false` and `DB_SSLMODE=disable` are for local development only. Non-debug settings require HTTPS database transport and a non-superuser database account.
 
+## Frontend styles
+
+The compiled stylesheet is committed at `static/css/app.css`; pages do not load CSS from a CDN. To rebuild it on Windows, download the pinned Tailwind standalone CLI into the ignored project-local `.tools` folder and verify its published SHA-256:
+
+```powershell
+New-Item -ItemType Directory -Force .tools | Out-Null
+curl.exe --fail --location --output .tools\tailwindcss-windows-x64.exe https://github.com/tailwindlabs/tailwindcss/releases/download/v4.3.5/tailwindcss-windows-x64.exe
+if ((Get-FileHash .tools\tailwindcss-windows-x64.exe -Algorithm SHA256).Hash.ToLowerInvariant() -ne "2803583268c53f4713e89943e211081fddb186c0a4a7d07b5c342c6ae853ec95") { throw "Tailwind CLI checksum mismatch." }
+& .\.tools\tailwindcss-windows-x64.exe -i static\css\tailwind.input.css -o static\css\app.css
+```
+
+The standalone binary is local and ignored by Git; the generated CSS is the tracked runtime asset.
+
 ## Tests
 
 Run the test suite with:

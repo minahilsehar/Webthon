@@ -11,9 +11,9 @@
                 <p class="hero-intro">A considered online examination experience for the people who create assessments and the people who take them.</p>
                 {% if user.is_authenticated %}
                     <div class="welcome-note">Signed in as <strong>{{ user.get_full_name|default:user.username }}</strong> · {{ user.get_role_display }}</div>
-                    <a class="button button-primary" href="#platform">Explore the platform <span aria-hidden="true">→</span></a>
+                    <a class="ui-button ui-button-primary" href="#platform">Explore the platform <span aria-hidden="true">→</span></a>
                 {% else %}
-                    <a class="button button-primary" href="{% url 'login' %}">Sign in to your account <span aria-hidden="true">→</span></a>
+                    <a class="ui-button ui-button-primary" href="{% url 'login' %}">Sign in to your account <span aria-hidden="true">→</span></a>
                 {% endif %}
                 <p class="hero-caption">One secure place for thoughtful assessment.</p>
             </div>
@@ -37,22 +37,22 @@
                 <p>Purposeful workflows help each person find what they need, while access stays tied to their role.</p>
             </div>
             <div class="role-grid">
-                <article class="role-card">
-                    <span class="role-index">01 / ADMINISTRATOR</span>
+                <article class="role-card ui-card">
+                    <span class="role-index ui-badge">01 / ADMINISTRATOR</span>
                     <div class="role-icon role-icon-admin" aria-hidden="true">A</div>
                     <h3>Keep the platform in good order.</h3>
                     <p>Manage accounts and role access from a central administration area.</p>
                     <span class="role-arrow" aria-hidden="true">↗</span>
                 </article>
-                <article class="role-card role-card-featured">
-                    <span class="role-index">02 / EXAMINER</span>
+                <article class="role-card ui-card ui-card-tint">
+                    <span class="role-index ui-badge">02 / EXAMINER</span>
                     <div class="role-icon role-icon-examiner" aria-hidden="true">E</div>
                     <h3>Build assessments with care.</h3>
                     <p>Prepare examinations, organize candidates, and review outcomes.</p>
                     <span class="role-arrow" aria-hidden="true">↗</span>
                 </article>
-                <article class="role-card">
-                    <span class="role-index">03 / CANDIDATE</span>
+                <article class="role-card ui-card">
+                    <span class="role-index ui-badge">03 / CANDIDATE</span>
                     <div class="role-icon role-icon-candidate" aria-hidden="true">C</div>
                     <h3>Focus on showing what you know.</h3>
                     <p>Find assigned assessments and see your own published results.</p>
@@ -95,7 +95,7 @@
     <section class="closing-section">
         <div class="container closing-inner">
             <div><p class="eyebrow">Your next step</p><h2>Ready when<br><em>you are.</em></h2></div>
-            <a class="button button-light" href="{% url 'login' %}">Go to sign in <span aria-hidden="true">→</span></a>
+            <a class="ui-button ui-button-primary" href="{% url 'login' %}">Go to sign in <span aria-hidden="true">→</span></a>
             <span class="closing-stamp" aria-hidden="true">EF<br>—<br>01</span>
         </div>
     </section>

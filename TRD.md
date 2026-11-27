@@ -15,7 +15,8 @@ Do not introduce a dependency outside this fixed stack without user approval. Th
 - `config/`: project settings and URL routing.
 - `accounts/`: custom user, role choices, Django admin integration, and initial migration.
 - `templates/`: shared site layout, public landing page, and built-in-auth login template.
-- `static/`: local core and responsive CSS plus SVG artwork.
+- `static/`: Tailwind input/output, theme/component/responsive CSS sources, and local SVG artwork.
+- Tailwind CSS is compiled offline by the pinned standalone CLI into a tracked stylesheet; runtime pages use no CDN assets.
 - PostgreSQL settings are read from `.env`/environment variables.
 - Django connects using a dedicated application role (never `postgres` in non-debug mode); non-debug database connections require SSL.
 - Django sessions are database-backed. Password hashing prefers Argon2.

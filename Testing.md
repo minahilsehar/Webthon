@@ -29,7 +29,8 @@ Do not apply migrations against a database containing data you need to preserve 
 ## Manual UI smoke checks
 
 - Open `/` at phone, tablet, and desktop widths; verify there is no horizontal overflow.
-- Navigate between page sections using the desktop links and the mobile disclosure menu.
+- Navigate between page sections using desktop links and the mobile bottom navigation.
+- Confirm generated styles are served from `static/css/app.css` and do not request external CSS or fonts.
 - Use keyboard navigation and the skip link; confirm focus remains visible.
 - Open `/accounts/login/`; verify username/password labels, CSRF token, and error feedback.
 - Submit invalid credentials and verify the generic error does not disclose whether a username exists.

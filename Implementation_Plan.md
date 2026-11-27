@@ -11,6 +11,7 @@ Work in small changes that keep the project runnable. The custom user model must
 - [x] Add a responsive Django-templated landing page, local SVG artwork, and built-in session login/logout routes.
 - [x] Add a DEBUG-only demo-account command that requires a password from the environment.
 - [x] Add six theme/elevation tokens as the first approved design-system phase.
+- [x] Add a local Tailwind CLI build and shared token-driven button, card, input, and badge styles; update the public shell with mobile bottom navigation.
 - [x] Add a database role CHECK-constraint migration and secure non-debug PostgreSQL defaults; migration remains unapplied pending a reachable database.
 - [x] Add product and technical documentation.
 

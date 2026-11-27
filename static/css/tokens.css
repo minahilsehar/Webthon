@@ -131,7 +131,10 @@
     --raised-lg: 14px 14px 28px var(--shadow-dark), -14px -14px 28px var(--shadow-light);
     --inset-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
     --focus-ring: var(--primary);
-    --transition-control: 160ms ease;
+    --transition-control: 160ms;
+    --easing-control: ease;
+    --default-transition-duration: var(--transition-control);
+    --default-transition-timing-function: var(--easing-control);
 }
 
 .raised-sm { box-shadow: var(--raised-sm); }

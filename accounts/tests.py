@@ -58,10 +58,10 @@ def test_public_homepage_and_login_page_render():
 
     assert home.status_code == 200
     assert b'data-theme="ivory"' in home.content
-    assert b"/static/css/tokens.css" in home.content
+    assert b"/static/css/app.css" in home.content
     assert b'id="platform"' in home.content
     assert b'id="how-it-works"' in home.content
-    assert b"/static/css/responsive.css" in home.content
+    assert b'class="mobile-bottom-nav"' in home.content
     assert login.status_code == 200
     assert b'name="csrfmiddlewaretoken"' in login.content
 

@@ -1,0 +1,62 @@
+@layer components {
+    .ui-button {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition;
+        color: var(--text);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        box-shadow: var(--raised-sm);
+        transition-duration: var(--transition-control);
+        transition-timing-function: var(--easing-control);
+        cursor: pointer;
+    }
+
+    .ui-button:hover:not(:disabled) { transform: translateY(-1px); }
+    .ui-button:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--inset-shadow); }
+    .ui-button:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+    .ui-button-primary {
+        color: var(--on-primary);
+        border-color: var(--primary);
+        background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 98%, var(--shadow-light)), var(--primary) 70%);
+    }
+    .ui-button-secondary { background: var(--surface); }
+    .ui-button-destructive {
+        color: var(--on-primary);
+        border-color: var(--danger);
+        background: var(--danger);
+    }
+    .ui-button-small { padding-inline: 1rem; }
+
+    .ui-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        box-shadow: var(--raised-sm);
+    }
+    .ui-card-tint {
+        background: color-mix(in srgb, var(--surface) 88%, var(--accent));
+    }
+
+    .ui-input {
+        min-height: 44px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        box-shadow: var(--inset-shadow);
+        color: var(--text);
+    }
+    .ui-badge {
+        display: inline-flex;
+        min-height: 28px;
+        align-items: center;
+        gap: .4rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-pill);
+        padding: .3rem .65rem;
+        color: var(--text);
+        background: var(--surface);
+        font-size: var(--type-xs);
+        font-weight: 700;
+    }
+    .mobile-bottom-nav, .mobile-account-control { display: none; }
+    .mobile-account-control form { margin: 0; }
+}
