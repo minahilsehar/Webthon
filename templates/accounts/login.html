@@ -2,20 +2,33 @@
 {% block title %}Sign in — Examflow{% endblock %}
 {% block content %}
 <main id="main" class="login-page">
-    <section class="login-card ui-card raised-md">
-        <p class="eyebrow">Welcome back</p>
-        <h1>Sign in to<br><em>continue.</em></h1>
-        <p class="login-intro">Use the account provided by your administrator.</p>
+    <section class="login-card ui-card" aria-labelledby="login-title">
+        <div class="login-heading">
+            <span class="login-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7 10V7a5 5 0 0 1 10 0v3"/>
+                    <rect x="4.5" y="10" width="15" height="11" rx="2"/>
+                    <path d="M12 14v3"/>
+                </svg>
+            </span>
+            <p class="eyebrow"><span class="eyebrow-dot"></span>Account access</p>
+            <h1 id="login-title">Welcome <em>back.</em></h1>
+            <p class="login-intro">Sign in with the account provided by your administrator.</p>
+        </div>
         {% if form.errors %}
             <p id="login-error" class="form-error" role="alert">Those credentials could not be verified. Please try again.</p>
         {% endif %}
-        <form method="post" class="login-form">
+        <form method="post" class="login-form" aria-labelledby="login-title">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
-            <label for="id_username">Username</label>
-            <input id="id_username" class="ui-input" name="username" type="text" autocomplete="username" required autofocus aria-invalid="{% if form.errors %}true{% else %}false{% endif %}"{% if form.errors %} aria-describedby="login-error"{% endif %}>
-            <label for="id_password">Password</label>
-            <input id="id_password" class="ui-input" name="password" type="password" autocomplete="current-password" required aria-invalid="{% if form.errors %}true{% else %}false{% endif %}"{% if form.errors %} aria-describedby="login-error"{% endif %}>
+            <div class="login-field">
+                <label for="id_username">Username</label>
+                <input id="id_username" class="ui-input" name="username" type="text" autocomplete="username" required autofocus aria-invalid="{% if form.errors %}true{% else %}false{% endif %}"{% if form.errors %} aria-describedby="login-error"{% endif %}>
+            </div>
+            <div class="login-field">
+                <label for="id_password">Password</label>
+                <input id="id_password" class="ui-input" name="password" type="password" autocomplete="current-password" required aria-invalid="{% if form.errors %}true{% else %}false{% endif %}"{% if form.errors %} aria-describedby="login-error"{% endif %}>
+            </div>
             <button class="ui-button ui-button-primary" type="submit">Sign in <span aria-hidden="true">→</span></button>
         </form>
         <a class="text-link login-back" href="{% url 'home' %}">← Back to home</a>

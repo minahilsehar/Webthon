@@ -2,6 +2,7 @@
     .container { width: calc(100% - 56px); }
     .header-inner { flex-wrap: wrap; padding-block: 10px; }
     .theme-controls { flex-basis: 100%; justify-content: center; }
+    .login-page { min-height: calc(100vh - 226px); }
     .hero h1 { font-size: clamp(48px, 5.2vw, 62px); }
     .process-grid { gap: 55px; }
     .role-card { padding-inline: 19px; }
@@ -18,6 +19,7 @@
     .theme-picker { flex: 0 0 100%; }
     .theme-picker fieldset { justify-content: center; }
     .theme-mode-toggle { flex: 0 0 64px; }
+    .login-page { min-height: calc(100vh - 346px); padding-block: 36px; }
     .mobile-bottom-nav {
         position: fixed;
         z-index: 20;

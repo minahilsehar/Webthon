@@ -13,6 +13,7 @@ Work in small changes that keep the project runnable. The custom user model must
 - [x] Add six theme/elevation tokens as the first approved design-system phase.
 - [x] Add a local Tailwind CLI build and shared token-driven button, card, input, and badge styles; update the public shell with mobile bottom navigation.
 - [x] Add the six-theme picker, light/dark switch, per-user theme preference endpoint, local first-paint cache, and self-hosted licensed assets.
+- [x] Polish the centered sign-in card with responsive Soft-Clay styling while preserving the built-in session login and CSRF flow.
 - [x] Add a database role CHECK-constraint migration and secure non-debug PostgreSQL defaults; migration remains unapplied pending a reachable database.
 - [x] Add product and technical documentation.
 
