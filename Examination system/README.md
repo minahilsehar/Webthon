@@ -104,6 +104,12 @@ Run the test suite with:
 pytest
 ```
 
+With the project virtual environment active, run the deployment build checks and collect static assets with:
+
+```powershell
+npm run build
+```
+
 ## Project documents
 
 - [Product requirements](PRD.md)
