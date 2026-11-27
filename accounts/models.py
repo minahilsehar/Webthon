@@ -14,10 +14,23 @@ class User(AbstractUser):
         EXAMINER = "examiner", "Examiner"
         CANDIDATE = "candidate", "Candidate"
 
+    class Theme(models.TextChoices):
+        IVORY = "ivory", "Ivory"
+        LAVENDER = "lavender", "Lavender"
+        MAUVE = "mauve", "Mauve"
+        ROSE = "rose", "Rose"
+        SAGE = "sage", "Sage"
+        PLUM = "plum", "Plum"
+
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
         default=Role.CANDIDATE,
+    )
+    theme = models.CharField(
+        max_length=16,
+        choices=Theme.choices,
+        default=Theme.IVORY,
     )
 
     objects = UserManager()
@@ -27,6 +40,12 @@ class User(AbstractUser):
             models.CheckConstraint(
                 condition=models.Q(role__in=("admin", "examiner", "candidate")),
                 name="accounts_user_valid_role",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    theme__in=("ivory", "lavender", "mauve", "rose", "sage", "plum")
+                ),
+                name="accounts_user_valid_theme",
             ),
         ]
 

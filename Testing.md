@@ -9,9 +9,9 @@ python manage.py check
 python -m pytest
 ```
 
-The current focused tests cover the user-role choices and database constraint declaration, candidate default role, session/cookie settings, PostgreSQL role/TLS configuration, and Argon2 as the preferred password hasher. The Django system check has passed. These checks do not require a live PostgreSQL server; database-backed behavior still needs PostgreSQL validation.
+The current focused tests cover role and theme choices/constraints, default profile values, the authenticated theme preference endpoint, session/cookie settings, PostgreSQL role/TLS configuration, and Argon2 as the preferred password hasher. The Django system check has passed. These checks do not require a live PostgreSQL server; database-backed behavior still needs PostgreSQL validation.
 
-The local PostgreSQL connection timed out during this work, so the migration table, applied migration state, actual constraints, and database grants were not inspected. The new user-role constraint migration has not been applied.
+The local PostgreSQL connection timed out during this work, so the migration table, applied migration state, actual constraints, and database grants were not inspected. The user-role and theme constraint migrations have not been applied.
 
 ## Before a database-backed run
 
@@ -31,6 +31,9 @@ Do not apply migrations against a database containing data you need to preserve 
 - Open `/` at phone, tablet, and desktop widths; verify there is no horizontal overflow.
 - Navigate between page sections using desktop links and the mobile bottom navigation.
 - Confirm generated styles are served from `static/css/app.css` and do not request external CSS or fonts.
+- Switch among all six theme swatches; use arrow keys in the radio group and verify the selected marker and page colors update.
+- Use the sun/moon switch to toggle Plum and back; reload and verify the last theme appears before styles paint.
+- While authenticated, change themes and reload; verify the profile preference persists and the browser network panel shows only local HTMX/Alpine/font assets.
 - Use keyboard navigation and the skip link; confirm focus remains visible.
 - Open `/accounts/login/`; verify username/password labels, CSRF token, and error feedback.
 - Submit invalid credentials and verify the generic error does not disclose whether a username exists.

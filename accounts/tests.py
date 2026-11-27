@@ -1,11 +1,13 @@
 import pytest
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.hashers import identify_hasher, make_password
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, override_settings
+from django.test import Client, RequestFactory, override_settings
 
 from .models import User
+from .views import save_theme
 
 
 def test_user_roles_are_defined():
@@ -17,7 +19,64 @@ def test_user_roles_are_defined():
 
 
 def test_new_user_defaults_to_candidate():
-    assert User(username="sample").role == User.Role.CANDIDATE
+    user = User(username="sample")
+    assert user.role == User.Role.CANDIDATE
+    assert user.theme == User.Theme.IVORY
+
+
+def test_theme_choices_and_database_constraint():
+    assert set(User.Theme.values) == {
+        "ivory",
+        "lavender",
+        "mauve",
+        "rose",
+        "sage",
+        "plum",
+    }
+    assert any(
+        constraint.name == "accounts_user_valid_theme"
+        for constraint in User._meta.constraints
+    )
+
+
+def test_theme_preference_is_saved_to_authenticated_user(monkeypatch):
+    user = User(username="sample")
+    saved_fields = []
+    monkeypatch.setattr(
+        user,
+        "save",
+        lambda *, update_fields: saved_fields.extend(update_fields),
+    )
+    request = RequestFactory().post("/accounts/theme/", {"theme": "plum"})
+    request.user = user
+
+    response = save_theme(request)
+
+    assert response.status_code == 204
+    assert user.theme == User.Theme.PLUM
+    assert saved_fields == ["theme"]
+
+
+def test_invalid_theme_preference_is_rejected():
+    request = RequestFactory().post("/accounts/theme/", {"theme": "system"})
+    request.user = User(username="sample")
+
+    response = save_theme(request)
+
+    assert response.status_code == 400
+
+
+def test_theme_preference_requires_authentication():
+    request = RequestFactory().post("/accounts/theme/", {"theme": "plum"})
+    request.user = AnonymousUser()
+
+    assert save_theme(request).status_code == 302
+
+
+def test_theme_preference_post_requires_csrf_token():
+    client = Client(enforce_csrf_checks=True)
+
+    assert client.post("/accounts/theme/", {"theme": "plum"}).status_code == 403
 
 
 def test_authentication_security_settings():
@@ -58,7 +117,13 @@ def test_public_homepage_and_login_page_render():
 
     assert home.status_code == 200
     assert b'data-theme="ivory"' in home.content
+    assert b'data-theme-key="anonymous"' in home.content
     assert b"/static/css/app.css" in home.content
+    assert home.content.count(b'name="theme"') == 6
+    assert b'role="switch"' in home.content
+    assert b"/static/js/theme-init.js" in home.content
+    assert b"/static/js/vendor/htmx.min.js" in home.content
+    assert b"/static/js/vendor/alpine.min.js" in home.content
     assert b'id="platform"' in home.content
     assert b'id="how-it-works"' in home.content
     assert b'class="mobile-bottom-nav"' in home.content

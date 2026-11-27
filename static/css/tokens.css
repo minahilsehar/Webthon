@@ -1,10 +1,33 @@
+@font-face {
+    font-family: "DM Serif Display";
+    src: url("../fonts/DMSerifDisplay-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+:root {
+    --swatch-ivory-bg: #F6F1E7;
+    --swatch-ivory-text: #2E2A24;
+    --swatch-lavender-bg: #ECE8F6;
+    --swatch-lavender-text: #2B2540;
+    --swatch-mauve-bg: #F0E4EA;
+    --swatch-mauve-text: #3A2832;
+    --swatch-rose-bg: #FBEAED;
+    --swatch-rose-text: #3D2329;
+    --swatch-sage-bg: #E6EEE6;
+    --swatch-sage-text: #243126;
+    --swatch-plum-bg: #33263E;
+    --swatch-plum-text: #F3EAF7;
+}
+
 :root[data-theme="ivory"] {
     color-scheme: light;
-    --bg: #F6F1E7;
+    --bg: var(--swatch-ivory-bg);
     --surface: #FBF8F1;
     --shadow-light: #FFFFFF;
     --shadow-dark: #D8CFBD;
-    --text: #2E2A24;
+    --text: var(--swatch-ivory-text);
     --text-muted: #6B6257;
     --primary: #8A6D3B;
     --on-primary: #FFFFFF;
@@ -18,11 +41,11 @@
 
 :root[data-theme="lavender"] {
     color-scheme: light;
-    --bg: #ECE8F6;
+    --bg: var(--swatch-lavender-bg);
     --surface: #F4F1FA;
     --shadow-light: #FFFFFF;
     --shadow-dark: #C9C2DE;
-    --text: #2B2540;
+    --text: var(--swatch-lavender-text);
     --text-muted: #5F587A;
     --primary: #6B5BB0;
     --on-primary: #FFFFFF;
@@ -36,11 +59,11 @@
 
 :root[data-theme="mauve"] {
     color-scheme: light;
-    --bg: #F0E4EA;
+    --bg: var(--swatch-mauve-bg);
     --surface: #F7EEF2;
     --shadow-light: #FFFFFF;
     --shadow-dark: #D3BFC9;
-    --text: #3A2832;
+    --text: var(--swatch-mauve-text);
     --text-muted: #6E5662;
     --primary: #9B5E7E;
     --on-primary: #FFFFFF;
@@ -54,11 +77,11 @@
 
 :root[data-theme="rose"] {
     color-scheme: light;
-    --bg: #FBEAED;
+    --bg: var(--swatch-rose-bg);
     --surface: #FFF3F5;
     --shadow-light: #FFFFFF;
     --shadow-dark: #E3C3C9;
-    --text: #3D2329;
+    --text: var(--swatch-rose-text);
     --text-muted: #75505A;
     --primary: #B5485F;
     --on-primary: #FFFFFF;
@@ -72,11 +95,11 @@
 
 :root[data-theme="sage"] {
     color-scheme: light;
-    --bg: #E6EEE6;
+    --bg: var(--swatch-sage-bg);
     --surface: #F0F5F0;
     --shadow-light: #FFFFFF;
     --shadow-dark: #BFCDBF;
-    --text: #243126;
+    --text: var(--swatch-sage-text);
     --text-muted: #4F6153;
     --primary: #4F7A5C;
     --on-primary: #FFFFFF;
@@ -94,7 +117,7 @@
     --surface: #33263E;
     --shadow-light: #433352;
     --shadow-dark: #1C1423;
-    --text: #F3EAF7;
+    --text: var(--swatch-plum-text);
     --text-muted: #C4B3D0;
     --primary: #C58BE0;
     --on-primary: #1C1423;
@@ -108,7 +131,7 @@
 
 :root {
     --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-display: Georgia, "Times New Roman", serif;
+    --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
     --type-xs: 0.75rem;
     --type-sm: 0.875rem;
     --type-base: 1rem;

@@ -1,12 +1,13 @@
 {% load static %}
 <!doctype html>
-<html lang="en" data-theme="ivory">
+<html lang="en" data-theme="{% if user.is_authenticated %}{{ user.theme }}{% else %}ivory{% endif %}" data-theme-key="{% if user.is_authenticated %}user-{{ user.pk }}{% else %}anonymous{% endif %}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f6f7f2">
     <title>{% block title %}Examflow{% endblock %}</title>
     <link rel="icon" href="{% static 'images/mark.svg' %}" type="image/svg+xml">
+    <script src="{% static 'js/theme-init.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
     {% block head %}{% endblock %}
 </head>
@@ -29,6 +30,7 @@
                     <a class="ui-button ui-button-secondary ui-button-small" href="{% url 'login' %}">Sign in</a>
                 {% endif %}
             </div>
+            {% include "includes/theme_switcher.html" %}
         </div>
     </header>
     {% block content %}{% endblock %}
@@ -60,5 +62,8 @@
             <span class="footer-note">Built for fair assessment.</span>
         </div>
     </footer>
+    <script src="{% static 'js/vendor/htmx.min.js' %}" defer></script>
+    <script src="{% static 'js/theme.js' %}" defer></script>
+    <script src="{% static 'js/vendor/alpine.min.js' %}" defer></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 The application uses Django 5, PostgreSQL, Django templates, and session-based authentication. The initial foundation defines the custom user model and its administrator, examiner, and candidate roles before any database migrations are created. Python 3.15 is being used locally at your direction; the project target remains Python 3.12.
 
-The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css` and local SVG artwork. The examination workflows are not implemented yet.
+The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. The examination workflows are not implemented yet.
 
 ## Local setup (Windows PowerShell)
 
@@ -26,7 +26,7 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
    ```
 
 4. Copy `.env.example` to `.env`, generate a unique key with `python -c "import secrets; print(secrets.token_urlsafe(50))"`, then set it and your local PostgreSQL credentials in `.env`. For non-debug environments, use a dedicated database role/password and set `DB_SSLMODE=require` or stronger; insecure SSL modes are rejected.
-5. Apply the initial custom-user migration:
+5. Apply the current database migrations after verifying the configured database:
 
    ```powershell
    python manage.py migrate
@@ -69,6 +69,8 @@ if ((Get-FileHash .tools\tailwindcss-windows-x64.exe -Algorithm SHA256).Hash.ToL
 ```
 
 The standalone binary is local and ignored by Git; the generated CSS is the tracked runtime asset.
+
+Alpine.js 3.17.5 and HTMX 2.0.8 are self-hosted under `static/js/vendor/`; DM Serif Display is self-hosted under `static/fonts/` with its SIL Open Font License. No CDN is used at runtime.
 
 ## Tests
 

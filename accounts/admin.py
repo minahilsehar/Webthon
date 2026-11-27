@@ -8,6 +8,7 @@ from .models import User
 class UserAdmin(DjangoUserAdmin):
     fieldsets = DjangoUserAdmin.fieldsets + (
         ("Role", {"fields": ("role",)}),
+        ("Preferences", {"fields": ("theme",)}),
     )
     add_fieldsets = DjangoUserAdmin.add_fieldsets + (
         ("Role", {"fields": ("role",)}),
