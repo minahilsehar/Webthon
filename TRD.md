@@ -14,7 +14,7 @@ Do not introduce a dependency outside this fixed stack without user approval. Th
 
 - `config/`: project settings and URL routing.
 - `accounts/`: custom user, role choices, Django admin integration, and initial migration.
-- `exams/`: exam, enrollment, question snapshots, attempts, answers, and audit records; attempt start and attempt-policy services.
+- `exams/`: examiner exam/question/enrollment workflows, candidate attempt delivery and history, monitoring/results views, and exam/attempt/audit data models.
 - `templates/`: shared site layout, public landing page, and built-in-auth login template.
 - `static/`: Tailwind input/output, theme/component/responsive CSS sources, and local SVG artwork.
 - Tailwind CSS is compiled offline by the pinned standalone CLI into a tracked stylesheet; runtime pages use no CDN assets.
@@ -33,7 +33,7 @@ Do not introduce a dependency outside this fixed stack without user approval. Th
 - Secure session and CSRF cookies by default; disable Secure only for local HTTP development.
 - Apply backend authorization to every protected examination, attempt, and result operation.
 - Protect state-changing forms with CSRF tokens; do not use GET for state changes.
-- Keep answer keys, unpublished results, and personal records out of public responses.
+- Keep answer keys, unpublished results, and personal records out of candidate responses.
 
 ## Data integrity and reliability
 
@@ -42,6 +42,7 @@ Do not introduce a dependency outside this fixed stack without user approval. Th
 - Snapshot assigned questions and marking rules for each attempt.
 - Retain grading state and audit changes needed for review and disputes.
 - Validate all data on the server, even when client-side validation is also used.
+- Queue offline answer edits in browser IndexedDB and retry them with per-question sequence numbers; the server remains authoritative for accepted answers and exam deadlines.
 
 ## Configuration and local operation
 

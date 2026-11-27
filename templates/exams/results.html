@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Exam results | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <header class="section-heading flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="eyebrow">{{ exam.title }}</p>
+            <h1>Attempts and results</h1>
+            <p>{% if exam.results_published %}Candidate results are published.{% else %}Candidate results are not published.{% endif %}</p>
+        </div>
+        {% if not exam.results_published %}
+            <form method="post" action="{% url 'results_publish' exam.pk %}">
+                {% csrf_token %}
+                <button class="ui-button ui-button-primary" type="submit">Publish results</button>
+            </form>
+        {% endif %}
+    </header>
+    <form method="get" class="ui-card mb-5 flex flex-wrap items-end gap-3 p-4">
+        <div>
+            <label for="candidate-filter">Candidate username</label>
+            <input class="ui-input px-3" id="candidate-filter" name="candidate" value="{{ candidate_filter }}">
+        </div>
+        <div>
+            <label for="attempt-status">Attempt status</label>
+            <select class="ui-input px-3" id="attempt-status" name="status">
+                <option value="">All statuses</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="ui-button ui-button-secondary" type="submit">Filter</button>
+    </form>
+    <div class="ui-card overflow-x-auto p-4">
+        <table class="w-full text-left">
+            <thead><tr><th class="p-3">Candidate</th><th class="p-3">Attempt</th><th class="p-3">Attempts used</th><th class="p-3">Submitted</th><th class="p-3">Status</th><th class="p-3">Score</th><th class="p-3">Counts</th></tr></thead>
+            <tbody>
+                {% for attempt in page %}
+                    <tr>
+                        <td class="p-3">{{ attempt.candidate.username }}</td>
+                        <td class="p-3">{{ attempt.attempt_number }}</td>
+                        <td class="p-3">{{ attempt.attempts_used }} / {{ exam.max_attempts }}</td>
+                        <td class="p-3">{{ attempt.submitted_at|default:"—" }}</td>
+                        <td class="p-3">{{ attempt.get_status_display }}</td>
+                        <td class="p-3">{{ attempt.score|default:"—" }}</td>
+                        <td class="p-3">{% if attempt.pk in counted_attempt_ids %}<span class="ui-badge">Official result</span>{% endif %}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td class="p-3" colspan="7">No attempts found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

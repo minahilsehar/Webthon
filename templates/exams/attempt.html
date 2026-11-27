@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ attempt.exam.title }} | Examflow{% endblock %}
+{% block head %}
+    <script src="{% static 'js/exam-attempt.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding" data-attempt="{{ attempt.pk }}" data-attempt-started="{{ attempt.started_at|date:'U.u' }}" data-autosave-url="{% url 'answer_autosave' attempt.pk %}" data-heartbeat-url="{% url 'attempt_heartbeat' attempt.pk %}">
+    <header class="section-heading">
+        <p class="eyebrow">{{ attempt.exam.title }}</p>
+        <h1>Attempt {{ attempt.attempt_number }} of {{ attempt.exam.max_attempts }}</h1>
+        <p id="attempt-status" role="status" aria-live="polite">Answers save automatically when you are online.</p>
+        <p>Time remaining: <time id="attempt-timer" data-seconds="{{ remaining_seconds }}">{{ remaining_seconds }}</time> seconds</p>
+    </header>
+    {% if attempt.status == "in_progress" %}
+        <form id="submit-attempt" method="post" action="{% url 'attempt_submit' attempt.pk %}">
+            {% csrf_token %}
+            <div class="grid gap-5">
+                {% for question in questions %}
+                    <fieldset class="ui-card p-6" data-question="{{ question.id }}" data-sequence="{{ question.answer.sequence }}">
+                        <legend class="text-lg font-semibold">{{ forloop.counter }}. {{ question.prompt }}</legend>
+                        <div class="mt-4 grid gap-3">
+                            {% for option in question.options %}
+                                <label class="flex items-center gap-3">
+                                    <input type="checkbox" name="question-{{ question.id }}" value="{{ option }}" {% if option in question.answer.value %}checked{% endif %}>
+                                    <span>{{ option }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                {% endfor %}
+            </div>
+            <button id="submit-button" class="ui-button ui-button-primary mt-6" type="submit">Submit exam</button>
+        </form>
+    {% else %}
+        <section class="ui-card p-6">
+            <p>This attempt is {{ attempt.get_status_display|lower }} and no longer accepts answers.</p>
+            <a class="ui-button ui-button-secondary mt-4" href="{% url 'attempt_history' attempt.exam_id %}">View attempt history</a>
+        </section>
+    {% endif %}
+</main>
+{% endblock %}

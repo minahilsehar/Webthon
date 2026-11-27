@@ -3,6 +3,11 @@
     <a href="{% url 'home' %}#how-it-works">How it works</a>
     <a href="{% url 'home' %}#principles">Our approach</a>
     {% if user.is_authenticated %}
+        {% if user.role == "candidate" %}
+            <a href="{% url 'candidate_dashboard' %}">My exams</a>
+        {% elif user.role == "examiner" %}
+            <a href="{% url 'examiner_dashboard' %}">Examiner workspace</a>
+        {% endif %}
         <span class="nav-user">{{ user.get_full_name|default:user.username }}</span>
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}

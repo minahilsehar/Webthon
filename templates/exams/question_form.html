@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Add question | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <section class="ui-card mx-auto max-w-3xl p-6">
+        <h1 class="text-2xl font-semibold">Add a question to {{ exam.title }}</h1>
+        <p class="mt-2">Enter options and correct answers as JSON lists, for example <code>["A", "B"]</code>.</p>
+        <form method="post" class="mt-5 grid gap-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="flex gap-3">
+                <button class="ui-button ui-button-primary" type="submit">Save question</button>
+                <a class="ui-button ui-button-secondary" href="{% url 'exam_manage' exam.pk %}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Exam settings | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <section class="ui-card mx-auto max-w-3xl p-6 md:p-8">
+        <p class="eyebrow">Examiner workspace</p>
+        <h1 class="text-2xl font-semibold">{% if is_new %}Create an exam{% else %}Exam settings{% endif %}</h1>
+        <form method="post" class="mt-6 grid gap-5">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div>
+                    <label class="block font-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.name == "max_attempts" %}
+                        <p class="mt-1 text-sm">Each time a candidate opens the exam counts as one attempt.</p>
+                    {% elif field.name == "scoring_policy" %}
+                        <p class="mt-1 text-sm">Choose which submitted attempt determines the candidate's official score.</p>
+                    {% endif %}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            <section class="ui-card ui-card-tint p-4" aria-labelledby="review-title">
+                <h2 id="review-title" class="font-semibold">Pre-publish review</h2>
+                <p>Attempts allowed: {{ form.max_attempts.value|default:"1" }}</p>
+                <p>Which score counts:
+                    {% if form.scoring_policy.value == "latest" %}Latest
+                    {% elif form.scoring_policy.value == "first" %}First
+                    {% else %}Highest{% endif %}
+                </p>
+                <p>Publishing requires at least one active question.</p>
+            </section>
+            <div class="flex flex-wrap gap-3">
+                <button class="ui-button ui-button-primary" type="submit">Save settings</button>
+                {% if not is_new %}
+                    <a class="ui-button ui-button-secondary" href="{% url 'exam_manage' form.instance.pk %}">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}

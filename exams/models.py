@@ -33,6 +33,7 @@ class Exam(models.Model):
         choices=Status.choices,
         default=Status.DRAFT,
     )
+    results_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -40,6 +41,10 @@ class Exam(models.Model):
             models.CheckConstraint(
                 condition=Q(max_attempts__gte=1) & Q(max_attempts__lte=10),
                 name="exams_max_attempts_1_to_10",
+            ),
+            models.CheckConstraint(
+                condition=Q(duration_minutes__gte=1),
+                name="exams_duration_minutes_gte_1",
             ),
             models.CheckConstraint(
                 condition=Q(scoring_policy__in=("highest", "latest", "first")),
@@ -224,6 +229,7 @@ class AuditLog(models.Model):
     class Action(models.TextChoices):
         ATTEMPT_STARTED = "attempt_started", "Attempt started"
         ATTEMPT_LIMIT_CHANGED = "attempt_limit_changed", "Attempt limit changed"
+        RESULTS_PUBLISHED = "results_published", "Results published"
 
     exam = models.ForeignKey(Exam, on_delete=models.PROTECT, related_name="audit_logs")
     actor = models.ForeignKey(

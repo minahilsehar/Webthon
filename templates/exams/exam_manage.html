@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Manage {{ exam.title }} | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <header class="section-heading">
+        <p class="eyebrow">Examiner workspace</p>
+        <h1>{{ exam.title }}</h1>
+        <p>Status: {{ exam.get_status_display }} · Attempts allowed: {{ exam.max_attempts }} · Which score counts: {{ exam.get_scoring_policy_display }}</p>
+    </header>
+    <div class="grid gap-6 lg:grid-cols-2">
+        <section class="ui-card p-6">
+            <h2 class="text-xl font-semibold">Exam settings</h2>
+            <form method="post" class="mt-5 grid gap-4">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <div>
+                        <label class="block font-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == "max_attempts" %}
+                            <p class="mt-1 text-sm">Each time a candidate opens the exam counts as one attempt.</p>
+                        {% elif field.name == "scoring_policy" %}
+                            <p class="mt-1 text-sm">Choose which submitted attempt determines the candidate's official score.</p>
+                        {% endif %}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <section class="ui-card ui-card-tint p-4" aria-labelledby="review-title">
+                    <h3 id="review-title" class="font-semibold">Pre-publish review</h3>
+                    <p>Attempts allowed: {{ form.max_attempts.value|default:exam.max_attempts }}</p>
+                    <p>Which score counts:
+                        {% if form.scoring_policy.value == "latest" %}Latest
+                        {% elif form.scoring_policy.value == "first" %}First
+                        {% else %}Highest{% endif %}
+                    </p>
+                    <p>At least one active question is required before publishing.</p>
+                </section>
+                <button class="ui-button ui-button-primary" type="submit">Save settings</button>
+            </form>
+        </section>
+        <section class="grid content-start gap-6">
+            <article class="ui-card p-6">
+                <div class="flex items-center justify-between gap-3">
+                    <h2 class="text-xl font-semibold">Questions</h2>
+                    {% if exam.status == "draft" %}
+                        <a class="ui-button ui-button-secondary" href="{% url 'question_add' exam.pk %}">Add question</a>
+                    {% endif %}
+                </div>
+                <ol class="mt-4 list-decimal pl-6">
+                    {% for question in questions %}
+                        <li>{{ question.prompt|truncatechars:100 }}</li>
+                    {% empty %}
+                        <li>No questions added.</li>
+                    {% endfor %}
+                </ol>
+            </article>
+            <article class="ui-card p-6">
+                <h2 class="text-xl font-semibold">Enroll a candidate</h2>
+                <form method="post" action="{% url 'candidate_enroll' exam.pk %}" class="mt-4 grid gap-3">
+                    {% csrf_token %}
+                    {{ enrollment_form.as_p }}
+                    <button class="ui-button ui-button-primary" type="submit">Enroll candidate</button>
+                </form>
+            </article>
+        </section>
+    </div>
+    <p class="mt-5 flex flex-wrap gap-3">
+        <a class="ui-button ui-button-secondary" href="{% url 'exam_monitoring' exam.pk %}">Monitoring</a>
+        <a class="ui-button ui-button-secondary" href="{% url 'exam_results' exam.pk %}">Results</a>
+        <a class="ui-button ui-button-secondary" href="{% url 'examiner_dashboard' %}">Back to exams</a>
+    </p>
+</main>
+{% endblock %}

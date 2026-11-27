@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Exam unavailable | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <section class="ui-card mx-auto max-w-2xl p-6" role="alert">
+        <h1 class="text-2xl font-semibold">Unable to start this exam</h1>
+        <p class="mt-3">{{ message }}</p>
+        <a class="ui-button ui-button-secondary mt-5" href="{% url 'candidate_dashboard' %}">Return to your exams</a>
+    </section>
+</main>
+{% endblock %}

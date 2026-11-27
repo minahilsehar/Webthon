@@ -8,6 +8,7 @@ from django.utils import timezone
 from .models import (
     Attempt,
     AttemptQuestion,
+    Answer,
     AuditLog,
     Enrollment,
     Exam,
@@ -21,6 +22,36 @@ class AttemptStartDenied(PermissionDenied):
 
 class AttemptLimitReached(AttemptStartDenied):
     status_code = 409
+
+
+class AttemptNotFound(PermissionDenied):
+    status_code = 404
+
+
+class AttemptClosed(PermissionDenied):
+    status_code = 409
+
+
+class AttemptSequenceConflict(AttemptClosed):
+    def __init__(self, current_sequence):
+        self.current_sequence = current_sequence
+        super().__init__("This answer sequence was already used.")
+
+
+def _score_attempt(attempt):
+    answers = dict(attempt.answers.values_list("question_id", "value"))
+    return sum(
+        question.points
+        for question in attempt.question_snapshots.all()
+        if answers.get(question.pk) == question.answer_key
+    )
+
+
+def _expire_attempt(attempt, now):
+    attempt.status = Attempt.Status.EXPIRED
+    attempt.submitted_at = now
+    attempt.score = _score_attempt(attempt)
+    attempt.save(update_fields=("status", "submitted_at", "score"))
 
 
 def start_attempt(user, exam):
@@ -53,9 +84,6 @@ def start_attempt(user, exam):
         ).first()
         if active_attempt and active_attempt.deadline > now:
             return active_attempt
-        if active_attempt:
-            active_attempt.status = Attempt.Status.EXPIRED
-            active_attempt.save(update_fields=("status",))
 
         attempts_used = Attempt.objects.filter(
             candidate=user,
@@ -80,22 +108,18 @@ def start_attempt(user, exam):
         if not questions:
             raise AttemptStartDenied("This exam has no available questions.")
 
-        last_attempt_number = (
-            Attempt.objects.filter(candidate=user, exam=exam).aggregate(
-                last_number=Max("attempt_number")
-            )["last_number"]
-            or 0
-        )
         deadline = now + timedelta(minutes=exam.duration_minutes)
         if exam.closes_at:
             deadline = min(deadline, exam.closes_at)
 
         try:
             with transaction.atomic():
+                if active_attempt:
+                    _expire_attempt(active_attempt, now)
                 attempt = Attempt.objects.create(
                     exam=exam,
                     candidate=user,
-                    attempt_number=last_attempt_number + 1,
+                    attempt_number=attempts_used + 1,
                     deadline=deadline,
                 )
                 AttemptQuestion.objects.bulk_create(
@@ -132,6 +156,139 @@ def start_attempt(user, exam):
             raise
 
         return attempt
+
+
+def save_attempt_answer(user, attempt_id, question_id, sequence, value):
+    if isinstance(sequence, bool) or not isinstance(sequence, int) or sequence < 1:
+        raise ValidationError("Answer sequence must be a positive integer.")
+
+    expired = False
+    result = None
+    with transaction.atomic():
+        try:
+            attempt = Attempt.objects.select_for_update().get(
+                pk=attempt_id,
+                candidate=user,
+            )
+        except Attempt.DoesNotExist as error:
+            raise AttemptNotFound("Attempt not found.") from error
+
+        now = timezone.now()
+        if attempt.status != Attempt.Status.IN_PROGRESS:
+            raise AttemptClosed("This attempt is no longer accepting answers.")
+        if now >= attempt.deadline:
+            _expire_attempt(attempt, now)
+            expired = True
+        else:
+            try:
+                question = AttemptQuestion.objects.get(pk=question_id, attempt=attempt)
+            except AttemptQuestion.DoesNotExist as error:
+                raise AttemptNotFound("Question not found for this attempt.") from error
+
+            if not isinstance(value, list) or any(
+                not isinstance(option, str) or option not in question.options
+                for option in value
+            ):
+                raise ValidationError("Answer must contain only available options.")
+            answer = Answer.objects.filter(attempt=attempt, question=question).first()
+            if answer and sequence < answer.sequence:
+                result = {"sequence": answer.sequence, "saved": True}
+            elif answer and sequence == answer.sequence and value == answer.value:
+                result = {"sequence": answer.sequence, "saved": True}
+            elif answer and sequence == answer.sequence:
+                raise AttemptSequenceConflict(answer.sequence)
+            elif answer:
+                answer.value = value
+                answer.sequence = sequence
+                answer.save(update_fields=("value", "sequence", "updated_at"))
+                result = {"sequence": sequence, "saved": True}
+            else:
+                Answer.objects.create(
+                    attempt=attempt,
+                    question=question,
+                    value=value,
+                    sequence=sequence,
+                )
+                result = {"sequence": sequence, "saved": True}
+
+    if expired:
+        raise AttemptClosed("The exam time has ended.")
+    return result
+
+
+@transaction.atomic
+def finish_attempt(user, attempt_id):
+    try:
+        attempt = Attempt.objects.select_for_update().get(
+            pk=attempt_id,
+            candidate=user,
+        )
+    except Attempt.DoesNotExist as error:
+        raise AttemptNotFound("Attempt not found.") from error
+
+    now = timezone.now()
+    if attempt.status == Attempt.Status.IN_PROGRESS and now >= attempt.deadline:
+        _expire_attempt(attempt, now)
+    elif attempt.status == Attempt.Status.IN_PROGRESS:
+        attempt.status = Attempt.Status.SUBMITTED
+        attempt.submitted_at = now
+        attempt.score = _score_attempt(attempt)
+        attempt.save(update_fields=("status", "submitted_at", "score"))
+    return attempt
+
+
+@transaction.atomic
+def heartbeat_attempt(user, attempt_id):
+    try:
+        attempt = Attempt.objects.select_for_update().get(
+            pk=attempt_id,
+            candidate=user,
+        )
+    except Attempt.DoesNotExist as error:
+        raise AttemptNotFound("Attempt not found.") from error
+
+    now = timezone.now()
+    if attempt.status == Attempt.Status.IN_PROGRESS and now >= attempt.deadline:
+        _expire_attempt(attempt, now)
+    remaining = max(0, int((attempt.deadline - now).total_seconds()))
+    return attempt, remaining
+
+
+def official_attempt(candidate, exam):
+    attempts = Attempt.objects.filter(
+        candidate=candidate,
+        exam=exam,
+        is_sandbox=False,
+        score__isnull=False,
+        status__in=(Attempt.Status.SUBMITTED, Attempt.Status.EXPIRED),
+    )
+    if exam.scoring_policy == Exam.ScoringPolicy.HIGHEST:
+        return attempts.order_by("-score", "attempt_number").first()
+    if exam.scoring_policy == Exam.ScoringPolicy.LATEST:
+        return attempts.order_by("-submitted_at", "-pk").first()
+    return attempts.order_by("attempt_number").first()
+
+
+@transaction.atomic
+def publish_exam_results(actor, exam):
+    if (
+        not actor.is_authenticated
+        or not actor.is_active
+        or actor.role != actor.Role.EXAMINER
+        or exam.owner_id != actor.pk
+    ):
+        raise PermissionDenied("You may only publish results for your own exam.")
+
+    locked_exam = Exam.objects.select_for_update().get(pk=exam.pk)
+    if not locked_exam.results_published:
+        locked_exam.results_published = True
+        locked_exam.save(update_fields=("results_published",))
+        AuditLog.objects.create(
+            exam=locked_exam,
+            actor=actor,
+            action=AuditLog.Action.RESULTS_PUBLISHED,
+        )
+    return locked_exam
 
 
 @transaction.atomic

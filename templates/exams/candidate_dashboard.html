@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Assigned exams | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <header class="section-heading">
+        <p class="eyebrow">Candidate workspace</p>
+        <h1>Your assigned exams</h1>
+        <p>Start when you are ready, and return to an active attempt without using another try.</p>
+    </header>
+    <div class="grid gap-5 md:grid-cols-2">
+        {% for enrollment in enrollments %}
+            <article class="ui-card p-6">
+                <h2 class="text-xl font-semibold">{{ enrollment.exam.title }}</h2>
+                <p class="mt-2">Duration: {{ enrollment.exam.duration_minutes }} minutes</p>
+                <p class="mt-2">
+                    <span aria-hidden="true">◷</span>
+                    <span>Attempt {{ enrollment.next_attempt_number }} of {{ enrollment.exam.max_attempts }}</span>
+                    <span>· {{ enrollment.attempts_remaining }} remaining</span>
+                </p>
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <form method="post" action="{% url 'attempt_start' enrollment.exam_id %}">
+                        {% csrf_token %}
+                        {% if enrollment.active_attempt %}
+                            <button class="ui-button ui-button-primary" type="submit">Resume</button>
+                        {% elif enrollment.attempts_remaining %}
+                            <button class="ui-button ui-button-primary" type="submit">Start</button>
+                        {% else %}
+                            <button class="ui-button" type="button" aria-disabled="true" aria-describedby="no-attempts-{{ enrollment.exam_id }}" disabled>
+                                <span aria-hidden="true">⊘</span> No attempts left
+                            </button>
+                            <p id="no-attempts-{{ enrollment.exam_id }}" class="mt-2 text-sm">You have used all attempts for this exam.</p>
+                        {% endif %}
+                    </form>
+                    <a class="ui-button ui-button-secondary" href="{% url 'instructions' enrollment.exam_id %}">Instructions</a>
+                    <a class="ui-button ui-button-secondary" href="{% url 'attempt_history' enrollment.exam_id %}">Attempt history</a>
+                </div>
+            </article>
+        {% empty %}
+            <p class="ui-card p-6">No exams have been assigned to your account yet.</p>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

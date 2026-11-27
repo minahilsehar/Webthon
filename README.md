@@ -2,7 +2,7 @@
 
 The application uses Django 5, PostgreSQL, Django templates, and session-based authentication. The initial foundation defines the custom user model and its administrator, examiner, and candidate roles before any database migrations are created. Python 3.15 is being used locally at your direction; the project target remains Python 3.12.
 
-The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. The exam, enrollment, question, attempt, answer, and audit data models and the server-side attempt start service are in place; candidate and examiner workflows are still being built.
+The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. Examiner workflows support exam settings, questions, enrollment, monitoring, and result publication. Candidate workflows support assigned exams, server-enforced attempt limits, resume, timed answering, offline answer queuing, submission, and published attempt history. PDF reports, scratchpad, manual grading, and deployment remain future work.
 
 ## Local setup (Windows PowerShell)
 
@@ -54,6 +54,8 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
 The demo command creates local accounts for all three roles, does not overwrite existing demo accounts, and refuses to run when `DEBUG` is false. Demo usernames are `demo-admin`, `demo-examiner`, and `demo-candidate`; no demo password is committed to the repository.
 
 Open `http://127.0.0.1:8000/` for the landing page. Sign-in is at `/accounts/login/`; Django administration is at `/admin/`.
+
+Candidates use `/exams/` to view assigned exams. Examiners use `/exams/manage/` to create exams, assign candidates, configure attempt limits and scoring policies, monitor candidates, and publish results. Add at least one active question before publishing an exam. The candidate answer page stores unsent changes in browser IndexedDB and retries them on reconnect; submitted data is still validated and saved by Django.
 
 The `.env` file is local-only and ignored by Git. `COOKIE_SECURE=false` and `DB_SSLMODE=disable` are for local development only. Non-debug settings require HTTPS database transport and a non-superuser database account.
 
