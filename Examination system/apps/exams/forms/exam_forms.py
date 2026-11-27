@@ -82,10 +82,10 @@ class EnrollmentForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     def clean_candidate_username(self):
-        username = self.cleaned_data["candidate_username"]
+        username = self.cleaned_data["candidate_username"].strip().lower()
         try:
             return User.objects.get(
-                username=username,
+                username__iexact=username,
                 role=User.Role.CANDIDATE,
                 is_active=True,
             )

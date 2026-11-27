@@ -44,14 +44,16 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
    python manage.py migrate
    ```
 
-6. Either create demo accounts with a strong password provided through the current PowerShell session, or create a personal administrator:
+6. To seed judging data, explicitly enable demo mode in the current PowerShell session and run:
 
    ```powershell
-   $env:DEMO_PASSWORD = "use-a-strong-local-only-password"
+   $env:DEMO_MODE = "true"
    python manage.py seed_demo
    ```
 
-   Or:
+   This creates the judging accounts `admin` / `admin`, `examiner` / `examiner`, and `2026-demo-001` / `candidate` (plus two demo candidates), sample catalog entries, exams, questions, and enrollments. These known passwords are for judging only; change or disable these accounts after the event. The command does nothing unless `DEMO_MODE=true` is explicitly set. It may be run against the intended database by setting that database's environment variables first.
+
+   Or create a personal administrator:
 
    ```powershell
    python manage.py createsuperuser
@@ -63,7 +65,7 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
    python manage.py runserver
    ```
 
-The demo command creates local accounts for all three roles, does not overwrite existing demo accounts, and refuses to run when `DEBUG` is false. Demo usernames are `demo-admin`, `demo-examiner`, and `demo-candidate`; no demo password is committed to the repository.
+Demo data is created through the same atomic account-creation service used by account creation in Django Admin. User identifiers are normalized to lowercase and unique without regard to case. Departments, degrees, and subjects are database-backed, can be managed separately in Django Admin, and cannot be deleted while assigned. Catalog changes and account creation are recorded in the account audit log.
 
 Open `http://127.0.0.1:8000/` for the landing page. Sign-in is at `/accounts/login/`; Django administration is at `/admin/`.
 

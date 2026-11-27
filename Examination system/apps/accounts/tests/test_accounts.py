@@ -1,13 +1,24 @@
 import pytest
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.hashers import identify_hasher, make_password
+from django.db.models.deletion import ProtectedError
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, RequestFactory, override_settings
+from django.core.exceptions import ValidationError
+from django.test import Client, RequestFactory
 
-from apps.accounts.models import User
+from apps.exams.models import Enrollment
+from apps.accounts.models import (
+    AccountAuditLog,
+    Degree,
+    Department,
+    Subject,
+    User,
+)
 from apps.accounts.controllers.theme import save_theme
+from apps.accounts.services import create_user
 
 
 def test_user_roles_are_defined():
@@ -134,15 +145,118 @@ def test_public_homepage_and_login_page_render():
     assert b'name="csrfmiddlewaretoken"' in login.content
 
 
-@override_settings(DEBUG=False)
-def test_demo_seed_command_refuses_non_debug_settings():
-    with pytest.raises(CommandError, match="DEBUG=true"):
+def test_demo_seed_command_requires_explicit_demo_mode(monkeypatch):
+    monkeypatch.delenv("DEMO_MODE", raising=False)
+
+    with pytest.raises(CommandError, match="DEMO_MODE=true"):
         call_command("seed_demo")
 
 
-@override_settings(DEBUG=True)
-def test_demo_seed_command_requires_a_password(monkeypatch):
-    monkeypatch.delenv("DEMO_PASSWORD", raising=False)
+@pytest.mark.django_db
+def test_create_user_normalizes_identifier_and_saves_related_data():
+    department = Department.objects.create(name="Computing")
+    degree = Degree.objects.create(name="Computer Science")
+    subject = Subject.objects.create(name="Web Technologies", code="WEB101")
 
-    with pytest.raises(CommandError, match="DEMO_PASSWORD"):
-        call_command("seed_demo")
+    user = create_user(
+        username="  New-Candidate-01 ",
+        password="a-Long-Unique-Passphrase-94!",
+        role=User.Role.CANDIDATE,
+        email="Candidate@Example.Test",
+        first_name="New",
+        last_name="Candidate",
+        department=department,
+        degrees=(degree,),
+        subjects=(subject,),
+    )
+
+    assert user.username == "new-candidate-01"
+    assert user.email == "candidate@example.test"
+    assert user.check_password("a-Long-Unique-Passphrase-94!")
+    assert authenticate(
+        RequestFactory().post("/accounts/login/"),
+        username="NEW-CANDIDATE-01",
+        password="a-Long-Unique-Passphrase-94!",
+    ) == user
+    assert list(user.degrees.all()) == [degree]
+    assert list(user.subjects.all()) == [subject]
+    assert AccountAuditLog.objects.get(target_user=user).details == {
+        "username": "new-candidate-01",
+        "role": User.Role.CANDIDATE,
+    }
+
+
+@pytest.mark.django_db
+def test_create_user_rejects_case_insensitive_duplicate_identifier():
+    create_user(username="Candidate-1", password=None)
+
+    with pytest.raises(ValidationError, match="identifier already exists"):
+        create_user(username="candidate-1", password=None)
+
+
+@pytest.mark.django_db
+def test_create_user_rolls_back_if_audit_write_fails(monkeypatch):
+    def fail_audit(*args, **kwargs):
+        raise RuntimeError("audit storage failed")
+
+    monkeypatch.setattr(AccountAuditLog.objects, "create", fail_audit)
+
+    with pytest.raises(RuntimeError, match="audit storage failed"):
+        create_user(username="rolled-back", password=None)
+
+    assert not User.objects.filter(username="rolled-back").exists()
+
+
+@pytest.mark.django_db
+def test_assigned_catalog_items_cannot_be_deleted():
+    degree = Degree.objects.create(name="Computer Science")
+    user = create_user(username="candidate-2", degrees=(degree,))
+
+    with pytest.raises(ProtectedError):
+        degree.delete()
+
+    assert user.degrees.filter(pk=degree.pk).exists()
+
+
+@pytest.mark.django_db
+def test_admin_user_creation_uses_atomic_service(client):
+    administrator = create_user(
+        username="account-admin",
+        password="a-Unique-Admin-Passphrase-94!",
+        role=User.Role.ADMIN,
+        is_staff=True,
+        is_superuser=True,
+    )
+    client.force_login(administrator)
+
+    response = client.post(
+        "/admin/accounts/user/add/",
+        {
+            "username": "created-in-admin",
+            "email": "created@example.test",
+            "first_name": "Created",
+            "last_name": "Candidate",
+            "role": User.Role.CANDIDATE,
+            "password1": "a-Unique-Candidate-Passphrase-94!",
+            "password2": "a-Unique-Candidate-Passphrase-94!",
+            "_save": "Save",
+        },
+    )
+
+    assert response.status_code == 302
+    created = User.objects.get(username="created-in-admin")
+    assert created.check_password("a-Unique-Candidate-Passphrase-94!")
+    assert AccountAuditLog.objects.get(target_user=created).actor == administrator
+
+
+@pytest.mark.django_db
+def test_demo_seed_is_idempotent_and_requires_demo_mode(monkeypatch):
+    monkeypatch.setenv("DEMO_MODE", "true")
+
+    call_command("seed_demo")
+    call_command("seed_demo")
+
+    assert User.objects.filter(username__in=("admin", "examiner")).count() == 2
+    assert User.objects.filter(username__startswith="2026-demo-").count() == 3
+    assert User.objects.get(username="admin").check_password("admin")
+    assert Enrollment.objects.count() == 3
