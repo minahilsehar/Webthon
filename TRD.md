@@ -14,6 +14,7 @@ Do not introduce a dependency outside this fixed stack without user approval. Th
 
 - `config/`: project settings and URL routing.
 - `accounts/`: custom user, role choices, Django admin integration, and initial migration.
+- `exams/`: exam, enrollment, question snapshots, attempts, answers, and audit records; attempt start and attempt-policy services.
 - `templates/`: shared site layout, public landing page, and built-in-auth login template.
 - `static/`: Tailwind input/output, theme/component/responsive CSS sources, and local SVG artwork.
 - Tailwind CSS is compiled offline by the pinned standalone CLI into a tracked stylesheet; runtime pages use no CDN assets.

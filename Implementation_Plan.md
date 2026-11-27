@@ -15,15 +15,15 @@ Work in small changes that keep the project runnable. The custom user model must
 - [x] Add the six-theme picker, light/dark switch, per-user theme preference endpoint, local first-paint cache, and self-hosted licensed assets.
 - [x] Polish the centered sign-in card with responsive Soft-Clay styling while preserving the built-in session login and CSRF flow.
 - [x] Add a database role CHECK-constraint migration and secure non-debug PostgreSQL defaults; migration remains unapplied pending a reachable database.
+- [x] Add exam, enrollment, question, attempt, snapshot, answer, and audit models; enforce attempt uniqueness/limits and implement the transactional start/resume and examiner attempt-policy services.
 - [x] Add product and technical documentation.
 
 ## Next implementation increments
 
 1. **Local runtime and demo setup:** validate under Python 3.12, configure PostgreSQL, run the demo-account seed command, then apply migrations.
 2. **Access foundations:** add role-aware authorization helpers and focused tests before adding protected workflows.
-3. **Exam authoring:** add exam and question models/forms/admin, lifecycle validation, and examiner ownership tests.
-4. **Enrollment:** add candidate assignment and availability checks.
-5. **Attempt delivery:** persist attempt snapshots and answers, enforce server deadlines, support resume and idempotent submission.
+3. **Exam authoring and enrollment:** add forms and protected views for exam settings, questions, publication, candidate assignment, and availability checks.
+4. **Attempt delivery:** add candidate-facing start/resume and instructions, server-owned answer autosave/outbox flow, enforce deadlines, and support idempotent submission.
 6. **Evaluation:** implement objective scoring, manual written grading, review, and controlled publication.
 7. **Monitoring and resilience:** record attempt events, show save/connectivity status, and test interrupted/retried requests.
 8. **Reports and secondary features:** add access-controlled PDF, verifiable report IDs, imports, analytics, sandbox isolation, workspace preferences, and scratchpad.

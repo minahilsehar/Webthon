@@ -2,7 +2,7 @@
 
 The application uses Django 5, PostgreSQL, Django templates, and session-based authentication. The initial foundation defines the custom user model and its administrator, examiner, and candidate roles before any database migrations are created. Python 3.15 is being used locally at your direction; the project target remains Python 3.12.
 
-The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. The examination workflows are not implemented yet.
+The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. The exam, enrollment, question, attempt, answer, and audit data models and the server-side attempt start service are in place; candidate and examiner workflows are still being built.
 
 ## Local setup (Windows PowerShell)
 
