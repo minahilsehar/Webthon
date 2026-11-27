@@ -13,9 +13,9 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.accounts.models import User
-from .forms import EnrollmentForm, ExamForm, QuestionForm
-from .models import Answer, Attempt, Enrollment, Exam
-from .services import (
+from ..forms import EnrollmentForm, ExamForm, QuestionForm
+from ..models import Answer, Attempt, Enrollment, Exam
+from ..services import (
     AttemptClosed,
     AttemptLimitReached,
     AttemptNotFound,

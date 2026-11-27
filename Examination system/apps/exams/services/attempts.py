@@ -5,7 +5,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Max
 from django.utils import timezone
 
-from .models import (
+from ..models import (
     Attempt,
     AttemptQuestion,
     Answer,

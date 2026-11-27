@@ -1,7 +1,7 @@
 from django import forms
 
 from apps.accounts.models import User
-from .models import Enrollment, Exam, Question
+from ..models import Enrollment, Exam, Question
 
 
 class ExamForm(forms.ModelForm):

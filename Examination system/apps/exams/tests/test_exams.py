@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.models import User
-from .models import (
+from ..models import (
     Attempt,
     AttemptQuestion,
     AuditLog,
@@ -19,7 +19,7 @@ from .models import (
     Exam,
     Question,
 )
-from .services import (
+from ..services import (
     AttemptClosed,
     AttemptLimitReached,
     AttemptNotFound,

@@ -1,5 +1,17 @@
 # Web-e-Thon Online Examination System
 
+## Architecture (MVC)
+
+The Django project uses a clear MVC-style layout:
+
+- `config/`: project settings and URL routing.
+- `apps/accounts/`: account data and the seeded demo-user command; `models/`, `services/`, `controllers/`, `forms/`, `templates/`, and `tests/` separate the account layers.
+- `apps/exams/`: examination data and attempt rules; `models/`, `services/`, `controllers/`, `forms/`, `templates/`, and `tests/` separate the exam layers.
+- `templates/`: shared layouts and presentation partials.
+- `static/`: CSS, JavaScript, fonts, and images.
+
+Django maps controllers to request-handling modules, models plus services to application data and business rules, and templates/static assets to the view layer.
+
 The application uses Django 5, PostgreSQL, Django templates, and session-based authentication. The initial foundation defines the custom user model and its administrator, examiner, and candidate roles before any database migrations are created. Python 3.15 is being used locally at your direction; the project target remains Python 3.12.
 
 The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. Examiner workflows support exam settings, questions, enrollment, monitoring, and result publication. Candidate workflows support assigned exams, server-enforced attempt limits, resume, timed answering, offline answer queuing, submission, and published attempt history. PDF reports, scratchpad, manual grading, and deployment remain future work.
