@@ -221,6 +221,9 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .my-3 {
+    margin-block: calc(var(--spacing) * 3);
+  }
   .mt-1 {
     margin-top: var(--spacing);
   }
@@ -970,7 +973,7 @@ a {
   color: inherit;
   text-decoration: none;
 }
-button, input {
+button, input, select, textarea {
   font: inherit;
 }
 .container {
@@ -1543,6 +1546,67 @@ h1 em, h2 em {
 }
 .captcha-panel-disabled {
   border-style: dashed;
+}
+.attempt-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.attempt-tools .ui-input {
+  width: auto;
+  min-width: 130px;
+}
+.attempt-question-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.attempt-question-link {
+  display: grid;
+  min-width: 112px;
+  min-height: 48px;
+  align-content: center;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 12px;
+  text-decoration: none;
+}
+.attempt-question-link[data-state="answered"] {
+  border-color: var(--success);
+}
+.attempt-question-link[data-state="review"], .attempt-question-link[data-state="answered-review"] {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 2px var(--warning);
+  @supports (color: color-mix(in lab, red, red)) {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--warning) 24%, transparent);
+  }
+}
+.attempt-scratchpad {
+  margin-bottom: 20px;
+}
+.attempt-scratchpad textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.attempt-question {
+  scroll-margin-top: 24px;
+}
+.attempt-question [data-review-toggle][aria-pressed="true"] {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+[data-attempt][data-text-size="large"] .attempt-question legend {
+  font-size: 1.35rem;
+}
+[data-attempt][data-text-size="large"] .attempt-question label {
+  font-size: 1.15rem;
 }
 .form-error {
   margin: 0 0 20px;
