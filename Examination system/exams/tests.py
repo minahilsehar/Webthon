@@ -10,7 +10,7 @@ from django.test import Client
 from django.urls import reverse
 from django.utils import timezone
 
-from accounts.models import User
+from apps.accounts.models import User
 from .models import (
     Attempt,
     AttemptQuestion,

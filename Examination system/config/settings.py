@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "axes",
-    "accounts",
+    "apps.accounts",
     "exams",
 ]
 

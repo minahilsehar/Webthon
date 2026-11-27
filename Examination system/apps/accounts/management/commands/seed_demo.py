@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.management.base import BaseCommand, CommandError
 
-from accounts.models import User
+from apps.accounts.models import User
 
 
 class Command(BaseCommand):

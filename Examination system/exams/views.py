@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.models import User
+from apps.accounts.models import User
 from .forms import EnrollmentForm, ExamForm, QuestionForm
 from .models import Answer, Attempt, Enrollment, Exam
 from .services import (

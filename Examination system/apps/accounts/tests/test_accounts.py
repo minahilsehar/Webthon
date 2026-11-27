@@ -6,8 +6,8 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import Client, RequestFactory, override_settings
 
-from .models import User
-from .views import save_theme
+from apps.accounts.models import User
+from apps.accounts.controllers.theme import save_theme
 
 
 def test_user_roles_are_defined():
