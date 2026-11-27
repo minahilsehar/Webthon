@@ -117,21 +117,24 @@ pytest
 Vercel detects this Django project from `manage.py`, serves the existing WSGI application, and collects `STATIC_ROOT` assets during deployment. `.python-version` pins the Vercel runtime to Python 3.12. The project must use the `Examination system` directory as its Vercel Root Directory.
 
 1. Push the repository to a Git provider, import it in Vercel, and set **Root Directory** to `Examination system`.
-2. Create a Neon PostgreSQL database and connect it to Vercel. Set `DATABASE_URL` to Neon’s pooled connection URL; production settings require encrypted PostgreSQL connections and use `CONN_MAX_AGE=0` for serverless requests.
+2. Create a Neon PostgreSQL database and connect it to Vercel. Set `DATABASE_URL` to Neon’s pooled connection URL for application requests. Set `DATABASE_URL_UNPOOLED` for administrative commands such as migrations. Production settings require encrypted PostgreSQL connections, use Django’s connection health checks, and disable server-side cursors for pooled connections.
 3. Add these environment variables to Vercel **Production** and **Preview** environments:
    - `DEBUG=false`
    - `SECRET_KEY` — a newly generated, private Django secret key.
    - `DATABASE_URL` — the Neon pooled PostgreSQL connection URL.
+   - `DATABASE_URL_UNPOOLED` — the Neon direct connection URL for migrations.
    - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` — live Cloudflare Turnstile keys for the deployed domain.
    - `TURNSTILE_TEST_MODE=false`
    - `ALLOWED_HOSTS` — optional comma-separated custom domains; Vercel deployment hostnames are added automatically.
    - `CSRF_TRUSTED_ORIGINS` — optional comma-separated HTTPS origins for custom domains.
 
    Never use the local `.env` file or Cloudflare test keys in production. Add credentials through Vercel’s Environment Variables dashboard, not to source control.
-4. After linking the project with the Vercel CLI, apply database migrations and create an administrator from PowerShell:
+4. After linking the project with the Vercel CLI, apply migrations using the direct URL and create an administrator:
 
    ```powershell
+   $env:DJANGO_USE_UNPOOLED_DATABASE = "true"
    vercel env run -e production -- .\.venv\Scripts\python.exe manage.py migrate
+   Remove-Item Env:\DJANGO_USE_UNPOOLED_DATABASE
    vercel env run -e production -- .\.venv\Scripts\python.exe manage.py createsuperuser
    ```
 
