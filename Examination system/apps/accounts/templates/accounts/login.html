@@ -1,5 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Sign in — Examflow{% endblock %}
+{% load static %}
+{% block title %}Sign in — Imtihanify{% endblock %}
+{% block head %}
+    {% if form.turnstile_enabled %}
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {% endif %}
+{% endblock %}
 {% block content %}
 <main id="main" class="login-page">
     <section class="login-card ui-card" aria-labelledby="login-title">
@@ -29,6 +35,31 @@
                 <label for="id_password">Password</label>
                 <input id="id_password" class="ui-input" name="password" type="password" autocomplete="current-password" required aria-invalid="{% if form.errors %}true{% else %}false{% endif %}"{% if form.errors %} aria-describedby="login-error"{% endif %}>
             </div>
+            {% if form.turnstile_enabled %}
+                <div class="captcha-panel">
+                    <div class="captcha-prompt">
+                        <img src="{% static 'images/captcha-robot.png' %}" alt="" width="48" height="48">
+                        <div class="captcha-copy">
+                            <span class="captcha-title">I'm not a robot</span>
+                            <p>Verify before signing in.</p>
+                            {% if form.turnstile_test_mode %}
+                                <p class="captcha-note">Development test keys are active; this is not production bot protection.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="cf-turnstile" data-sitekey="{{ form.turnstile_site_key }}" data-size="compact" data-theme="auto"></div>
+                </div>
+            {% elif form.turnstile_dev_bypass %}
+                <div class="captcha-panel captcha-panel-disabled" role="status">
+                    <div class="captcha-prompt">
+                        <img src="{% static 'images/captcha-robot.png' %}" alt="" width="48" height="48">
+                        <div class="captcha-copy">
+                            <span class="captcha-title">I'm not a robot</span>
+                            <p>Verification is skipped in development because Turnstile keys are not set.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             <button class="ui-button ui-button-primary" type="submit">Sign in <span aria-hidden="true">→</span></button>
         </form>
         <a class="text-link login-back" href="{% url 'home' %}">← Back to home</a>

@@ -5,27 +5,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f6f7f2">
-    <title>{% block title %}Examflow{% endblock %}</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Imtihanify">
+    <title>{% block title %}Imtihanify{% endblock %}</title>
     <link rel="icon" href="{% static 'images/mark.svg' %}" type="image/svg+xml">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/pwa-icon-192.png' %}">
     <script src="{% static 'js/theme-init.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20261115">
     {% block head %}{% endblock %}
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
         <div class="container header-inner">
-            <a class="brand" href="{% url 'home' %}" aria-label="Examflow home">
+            <a class="brand" href="{% url 'home' %}" aria-label="Imtihanify home">
                 <img src="{% static 'images/mark.svg' %}" alt="" width="34" height="34">
-                <span>examflow<span class="brand-period">.</span></span>
+                <span>Imtihanify<span class="brand-period">.</span></span>
             </a>
             <div class="desktop-navigation">{% include "includes/navigation.html" %}</div>
             <div class="mobile-account-control">
                 {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button class="ui-button ui-button-secondary ui-button-small" type="submit">Sign out</button>
-                    </form>
+                    {% include "includes/profile_menu.html" %}
                 {% else %}
                     <a class="ui-button ui-button-secondary ui-button-small" href="{% url 'login' %}">Sign in</a>
                 {% endif %}
@@ -68,7 +70,7 @@
         <div class="container footer-inner">
             <a class="brand brand-footer" href="{% url 'home' %}">
                 <img src="{% static 'images/mark.svg' %}" alt="" width="28" height="28">
-                <span>examflow<span class="brand-period">.</span></span>
+                <span>Imtihanify<span class="brand-period">.</span></span>
             </a>
             <p>Clearer exams. More confident candidates.</p>
             <span class="footer-note">Built for fair assessment.</span>

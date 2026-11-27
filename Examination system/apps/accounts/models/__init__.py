@@ -1,5 +1,6 @@
 from .audit import AccountAuditLog
 from .catalog import Degree, Department, Subject, UserDegree, UserSubject
+from .photo import UserPhoto
 from .user import User, UserManager
 
 __all__ = (
@@ -10,5 +11,6 @@ __all__ = (
     "User",
     "UserDegree",
     "UserManager",
+    "UserPhoto",
     "UserSubject",
 )

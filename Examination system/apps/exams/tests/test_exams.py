@@ -421,6 +421,10 @@ def test_candidate_start_resume_and_attempt_page_hide_answer_keys(exam_setup):
     assert b"3 attempts remaining" in instructions.content
     assert started.status_code == 302
     assert page.status_code == 200
+    assert b"Question navigation" in page.content
+    assert b"Scratchpad" in page.content
+    assert b"workspace-text-size" in page.content
+    assert b"Mark for review" in page.content
     assert set(page.context["questions"][0]) == {"id", "prompt", "options", "answer"}
     assert "answer_key" not in page.context["questions"][0]
     assert client.post(reverse("attempt_start", args=(exam.pk,))).url == reverse(

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}{{ attempt.exam.title }} | Examflow{% endblock %}
+{% block title %}{{ attempt.exam.title }} | Imtihanify{% endblock %}
 {% block head %}
     <script src="{% static 'js/exam-attempt.js' %}" defer></script>
 {% endblock %}
 {% block content %}
-<main id="main" class="container section-padding" data-attempt="{{ attempt.pk }}" data-attempt-started="{{ attempt.started_at|date:'U.u' }}" data-autosave-url="{% url 'answer_autosave' attempt.pk %}" data-heartbeat-url="{% url 'attempt_heartbeat' attempt.pk %}">
+<main id="main" class="container section-padding" data-attempt="{{ attempt.pk }}" data-attempt-started="{{ attempt.started_at|date:'U.u' }}" data-user="{{ user.pk }}" data-autosave-url="{% url 'answer_autosave' attempt.pk %}" data-heartbeat-url="{% url 'attempt_heartbeat' attempt.pk %}">
     <header class="section-heading">
         <p class="eyebrow">{{ attempt.exam.title }}</p>
         <h1>Attempt {{ attempt.attempt_number }} of {{ attempt.exam.max_attempts }}</h1>
@@ -13,12 +13,34 @@
         <p>Time remaining: <time id="attempt-timer" data-seconds="{{ remaining_seconds }}">{{ remaining_seconds }}</time> seconds</p>
     </header>
     {% if attempt.status == "in_progress" %}
+        <section class="attempt-tools" aria-label="Exam workspace preferences">
+            <label for="workspace-text-size">Question text size</label>
+            <select id="workspace-text-size" class="ui-input px-3">
+                <option value="standard">Standard</option>
+                <option value="large">Large</option>
+            </select>
+        </section>
+        <nav class="attempt-question-navigation" aria-label="Question navigation">
+            {% for question in questions %}
+                <a class="attempt-question-link" href="#question-{{ question.id }}" data-question-nav data-question-id="{{ question.id }}" data-question-number="{{ forloop.counter }}">
+                    <span>Question {{ forloop.counter }}</span>
+                    <span data-question-status>Not answered</span>
+                </a>
+            {% endfor %}
+        </nav>
+        <section class="attempt-scratchpad ui-card p-5" aria-labelledby="scratchpad-title">
+            <h2 id="scratchpad-title" class="text-lg font-semibold">Scratchpad</h2>
+            <p class="mt-1 text-sm">Notes are saved in this browser on this device and are not submitted with your answers.</p>
+            <label class="sr-only" for="attempt-scratchpad">Scratchpad notes</label>
+            <textarea id="attempt-scratchpad" class="ui-input mt-3 w-full p-3" rows="6" placeholder="Work through your rough notes here…"></textarea>
+        </section>
         <form id="submit-attempt" method="post" action="{% url 'attempt_submit' attempt.pk %}">
             {% csrf_token %}
             <div class="grid gap-5">
                 {% for question in questions %}
-                    <fieldset class="ui-card p-6" data-question="{{ question.id }}" data-sequence="{{ question.answer.sequence }}">
+                    <fieldset id="question-{{ question.id }}" class="attempt-question ui-card p-6" data-question="{{ question.id }}" data-sequence="{{ question.answer.sequence }}">
                         <legend class="text-lg font-semibold">{{ forloop.counter }}. {{ question.prompt }}</legend>
+                        <button class="ui-button ui-button-secondary ui-button-small my-3" type="button" data-review-toggle aria-pressed="false">Mark for review</button>
                         <div class="mt-4 grid gap-3">
                             {% for option in question.options %}
                                 <label class="flex items-center gap-3">

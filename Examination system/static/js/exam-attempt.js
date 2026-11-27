@@ -5,9 +5,13 @@
 
     const attemptId = root.dataset.attempt;
     const attemptKey = `${attemptId}:${root.dataset.attemptStarted}`;
+    const workspaceKey = `imtihanify-workspace:${root.dataset.user}`;
+    const scratchpadKey = `imtihanify-scratchpad:${attemptKey}`;
     const status = document.getElementById("attempt-status");
     const timer = document.getElementById("attempt-timer");
     const submitButton = document.getElementById("submit-button");
+    const textSize = document.getElementById("workspace-text-size");
+    const scratchpad = document.getElementById("attempt-scratchpad");
     const csrfToken = form.querySelector("[name=csrfmiddlewaretoken]").value;
     const databaseRequest = indexedDB.open("examflow-outbox", 1);
     let database;
@@ -16,6 +20,91 @@
     let deadlineReached = Number(timer.dataset.seconds) <= 0;
     let attemptClosed = false;
     let remaining = Number(timer.dataset.seconds);
+
+    function readLocalValue(key) {
+        try {
+            return window.localStorage.getItem(key);
+        } catch (error) {
+            setStatus("Browser storage is unavailable. Workspace preferences may not be retained.");
+            return null;
+        }
+    }
+
+    function writeLocalValue(key, value, failureMessage) {
+        try {
+            window.localStorage.setItem(key, value);
+            return true;
+        } catch (error) {
+            setStatus(failureMessage);
+            return false;
+        }
+    }
+
+    const savedTextSize = readLocalValue(workspaceKey);
+    textSize.value = savedTextSize === "large" ? "large" : "standard";
+    root.dataset.textSize = textSize.value;
+    textSize.addEventListener("change", () => {
+        root.dataset.textSize = textSize.value;
+        writeLocalValue(
+            workspaceKey,
+            textSize.value,
+            "This device could not save your workspace preference.",
+        );
+    });
+
+    scratchpad.value = readLocalValue(scratchpadKey) || "";
+    scratchpad.addEventListener("input", () => {
+        writeLocalValue(
+            scratchpadKey,
+            scratchpad.value,
+            "This device could not save your scratchpad notes. Copy them before leaving.",
+        );
+    });
+
+    function updateQuestionNavigation(fieldset) {
+        const questionId = fieldset.dataset.question;
+        const link = document.querySelector(`[data-question-nav][data-question-id="${questionId}"]`);
+        if (!link) return;
+
+        const reviewButton = fieldset.querySelector("[data-review-toggle]");
+        const markedForReview = reviewButton?.getAttribute("aria-pressed") === "true";
+        const answered = fieldset.querySelectorAll("input[type=checkbox]:checked").length > 0;
+        const state = markedForReview
+            ? (answered ? "answered-review" : "review")
+            : (answered ? "answered" : "unanswered");
+        const stateText = markedForReview
+            ? (answered ? "Answered · Review" : "Marked for review")
+            : (answered ? "Answered" : "Not answered");
+
+        link.dataset.state = state;
+        link.querySelector("[data-question-status]").textContent = stateText;
+        link.setAttribute(
+            "aria-label",
+            `Question ${link.dataset.questionNumber}: ${stateText}`,
+        );
+    }
+
+    for (const fieldset of document.querySelectorAll("[data-question]")) {
+        const reviewButton = fieldset.querySelector("[data-review-toggle]");
+        const reviewKey = `${attemptKey}:review:${fieldset.dataset.question}`;
+        if (readLocalValue(reviewKey) === "true") {
+            reviewButton.setAttribute("aria-pressed", "true");
+            reviewButton.textContent = "Remove review mark";
+        }
+        reviewButton.addEventListener("click", () => {
+            const marked = reviewButton.getAttribute("aria-pressed") !== "true";
+            reviewButton.setAttribute("aria-pressed", String(marked));
+            reviewButton.textContent = marked ? "Remove review mark" : "Mark for review";
+            writeLocalValue(
+                reviewKey,
+                String(marked),
+                "This device could not save the review mark.",
+            );
+            updateQuestionNavigation(fieldset);
+        });
+        updateQuestionNavigation(fieldset);
+        fieldset.addEventListener("change", () => updateQuestionNavigation(fieldset));
+    }
 
     databaseRequest.onupgradeneeded = () => {
         databaseRequest.result.createObjectStore("answers", { keyPath: "key" });
@@ -106,6 +195,7 @@
             for (const input of fieldset.querySelectorAll("input[type=checkbox]")) {
                 input.checked = record.value.includes(input.value);
             }
+            updateQuestionNavigation(fieldset);
         }
     }
 
@@ -220,6 +310,9 @@
     window.addEventListener("online", () => {
         if (!attemptClosed) sendHeartbeat().catch((error) => setStatus(error.message));
         else flushOutbox().catch((error) => setStatus(error.message));
+    });
+    window.addEventListener("offline", () => {
+        if (!attemptClosed) setStatus("Connection lost. New answer changes will be queued on this device.");
     });
     window.setInterval(() => {
         if (remaining > 0) remaining -= 1;

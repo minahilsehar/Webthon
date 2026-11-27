@@ -9,9 +9,9 @@ python manage.py check
 python -m pytest
 ```
 
-The current focused tests cover role and theme choices/constraints, default profile values, the authenticated theme preference endpoint, session/cookie settings, PostgreSQL role/TLS configuration, and Argon2 as the preferred password hasher. The Django system check has passed. These checks do not require a live PostgreSQL server; database-backed behavior still needs PostgreSQL validation.
+The test suite covers account and role rules, exam creation/enrollment/attempt lifecycles, server-side authorization, snapshots, answer autosave, scoring and result publication, account import, profile/theme behavior, Turnstile verification, and manifest assets. Database-backed integration tests require PostgreSQL. The application role is intentionally not granted `CREATEDB`; use a separate test role/database with appropriate permissions rather than running tests against the live application database.
 
-The local PostgreSQL connection timed out during this work, so the migration table, applied migration state, actual constraints, and database grants were not inspected. The user-role and theme constraint migrations have not been applied.
+The full suite has passed against an isolated PostgreSQL 17 test cluster. The live application database is separate; verify its migration state and grants independently before deployment.
 
 ## Before a database-backed run
 
@@ -40,6 +40,6 @@ Do not apply migrations against a database containing data you need to preserve 
 - Authenticate with a valid user and verify sign-out is a CSRF-protected POST.
 - Check the browser network panel: page artwork is served from local static files.
 
-## Planned test coverage
+## Remaining test coverage
 
-As examination features are implemented, add tests for server-side role isolation, schedule boundaries, fixed attempt deadlines, answer autosave and resume, duplicate submission, objective scoring, manual grading limits, publication visibility, report authorization, and import validation.
+Add tests for written-response grading, marking-rule edge cases, announcements/incidents, sandbox isolation through the UI, question imports, analytics, PDF/report verification authorization, workspace preferences, scratchpad persistence, and failure/load behavior for active attempts.

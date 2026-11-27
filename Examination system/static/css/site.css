@@ -12,13 +12,13 @@
 html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 body { margin: 0; color: var(--ink); background: var(--paper); }
 a { color: inherit; text-decoration: none; }
-button, input { font: inherit; }
+button, input, select, textarea { font: inherit; }
 .container { width: min(1120px, calc(100% - 64px)); margin-inline: auto; }
 .skip-link { position: absolute; z-index: 20; top: -50px; left: 16px; padding: 12px 16px; color: var(--on-primary); background: var(--primary); }
 .skip-link:focus { top: 12px; }
 .site-header { position: sticky; z-index: 10; top: 0; background: var(--bg); border-bottom: 1px solid var(--border); }
 .header-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; }
-.brand { display: inline-flex; gap: 10px; align-items: center; font: 800 20px/1 "Manrope", sans-serif; letter-spacing: -1px; }
+.brand { display: inline-flex; gap: 10px; align-items: center; font: 800 20px/1 "Times New Roman", Times, serif; letter-spacing: -1px; }
 .brand img { display: block; }
 .brand-period { color: var(--primary); }
 .desktop-navigation { display: block; }
@@ -123,5 +123,33 @@ h1 em, h2 em { color: var(--primary); font-style: normal; }
 .login-form label { font-size: 13px; font-weight: 700; }
 .login-form input { width: 100%; min-height: 52px; border-radius: var(--radius-md); padding: 0 16px; }
 .login-form .ui-button { width: 100%; min-height: 52px; margin-top: 8px; }
+.captcha-panel {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 17px;
+    border: 1px solid color-mix(in srgb, var(--border) 24%, var(--surface));
+    border-radius: var(--radius-md);
+    padding: 14px;
+    background: var(--surface);
+}
+.captcha-prompt { display: flex; align-items: center; gap: 12px; }
+.captcha-prompt img { width: 48px; height: 48px; flex: 0 0 auto; border-radius: 12px; object-fit: cover; background: #fff; }
+.captcha-copy { display: grid; gap: 2px; }
+.captcha-title { font-size: 13px; font-weight: 700; }
+.captcha-copy p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.captcha-copy .captcha-note { color: var(--warning); }
+.captcha-panel-disabled { border-style: dashed; }
+.attempt-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+.attempt-tools .ui-input { width: auto; min-width: 130px; }
+.attempt-question-navigation { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.attempt-question-link { display: grid; min-width: 112px; min-height: 48px; align-content: center; gap: 2px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px; color: var(--text); background: var(--surface); font-size: 12px; text-decoration: none; }
+.attempt-question-link[data-state="answered"] { border-color: var(--success); }
+.attempt-question-link[data-state="review"], .attempt-question-link[data-state="answered-review"] { border-color: var(--warning); box-shadow: 0 0 0 2px color-mix(in srgb, var(--warning) 24%, transparent); }
+.attempt-scratchpad { margin-bottom: 20px; }
+.attempt-scratchpad textarea { min-height: 120px; resize: vertical; }
+.attempt-question { scroll-margin-top: 24px; }
+.attempt-question [data-review-toggle][aria-pressed="true"] { border-color: var(--warning); color: var(--warning); }
+[data-attempt][data-text-size="large"] .attempt-question legend { font-size: 1.35rem; }
+[data-attempt][data-text-size="large"] .attempt-question label { font-size: 1.15rem; }
 .form-error { margin: 0 0 20px; border-left: 3px solid var(--danger); border-radius: var(--radius-sm); padding: 12px 14px; color: var(--danger); background: color-mix(in srgb, var(--surface) 88%, var(--danger)); font-size: 13px; line-height: 1.6; }
 .login-back { min-height: 44px; margin-top: 17px; padding-inline: 4px; }

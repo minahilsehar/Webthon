@@ -2,7 +2,7 @@
 
 ## Product
 
-**Examflow** is a responsive online examination system for institutions and competition organizers. It supports administrators, examiners, and candidates with server-enforced access controls.
+**Imtihanify** is a responsive online examination system for institutions and competition organizers. It supports administrators, examiners, and candidates with server-enforced access controls.
 
 ## Problem
 
@@ -29,7 +29,9 @@ Online examinations need clear administration, dependable timing and answer hand
 
 ## Current implementation
 
-The current application provides the project foundation, custom role-bearing user model, secure session settings, a responsive one-page introduction, sign-in/sign-out forms, and a local-only command to seed demo accounts. Exam, question, attempt, grading, reporting, and candidate workflows remain future implementation work; the current landing page does not claim that those workflows are available.
+The application has administrator, examiner, and candidate roles; protected exam setup and enrollment; scheduled draft/published exams; objective-choice questions; server-timed attempt start/resume, question snapshots, answer autosave with an IndexedDB offline queue, objective scoring, result publication, attempt history, and a basic examiner monitoring/results view. Account CSV import, profile and theme preferences, sign-in Turnstile verification, and the Imtihanify web-app manifest are also present.
+
+The implementation does not yet meet the complete competition specification. In particular, it lacks reusable categorized/difficulty-rated question banks, written-response questions and manual grading, question randomization, candidate question navigation/review flags, exam announcements and incident records, question analytics, PDF and verifiable reports, a candidate-facing sandbox, question import, exam-workspace customization, and a scratchpad. No production deployment or representative exam-load benchmark is configured.
 
 ## Success criteria
 
@@ -40,6 +42,6 @@ The current application provides the project foundation, custom role-bearing use
 - The public interface uses locally stored imagery and does not rely on an external image host.
 - Automated tests and Django system checks pass for implemented behavior.
 
-## Innovation direction
+## Innovation challenge
 
-Prioritize failure-resilient exams: persist accepted answers server-side, use server-authoritative deadlines, and make save status visible. This is a product direction, not a claim that attempt handling is implemented yet.
+The current implementation partially addresses failure-resilient examinations: accepted answers are stored server-side, deadlines use server time, active attempts can be resumed, and unsynchronized answer edits are queued in IndexedDB. This is not a complete offline guarantee; expiry finalization, prolonged outages, and large-scale concurrency still need end-to-end/load validation.

@@ -18,7 +18,7 @@
     .theme-controls { flex: 0 0 100%; flex-wrap: wrap; justify-content: center; gap: 0; }
     .theme-picker { flex: 0 0 100%; }
     .theme-picker fieldset { justify-content: center; }
-    .theme-mode-toggle { flex: 0 0 64px; }
+    .theme-mode-toggle { flex: 0 0 92px; }
     .login-page { min-height: calc(100vh - 346px); padding-block: 36px; }
     .mobile-bottom-nav {
         position: fixed;

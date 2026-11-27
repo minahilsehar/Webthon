@@ -1,4 +1,4 @@
-# Web-e-Thon Online Examination System
+# Imtihanify — Online Examination System
 
 ## Architecture (MVC)
 
@@ -14,7 +14,9 @@ Django maps controllers to request-handling modules, models plus services to app
 
 The application uses Django 5, PostgreSQL, Django templates, and session-based authentication. The initial foundation defines the custom user model and its administrator, examiner, and candidate roles before any database migrations are created. Python 3.15 is being used locally at your direction; the project target remains Python 3.12.
 
-The public landing page and sign-in screen are responsive, with screen adjustments in `static/css/responsive.css`, local SVG artwork, and a six-theme appearance picker. Authenticated theme choices are saved to the user's profile; anonymous choices are stored locally in the browser. Examiner workflows support exam settings, questions, enrollment, monitoring, and result publication. Candidate workflows support assigned exams, server-enforced attempt limits, resume, timed answering, offline answer queuing, submission, and published attempt history. PDF reports, scratchpad, manual grading, and deployment remain future work.
+The public landing page and sign-in screen are responsive, with local artwork and a six-theme appearance picker. Examiner workflows support exam settings, objective-choice questions, candidate enrollment, basic attempt monitoring, and result publication. Candidate workflows support assigned exams, server-enforced attempt limits and deadlines, resume, answer snapshots, autosave, an IndexedDB offline queue, submission, and published attempt history.
+
+This is not yet a complete implementation of the Web-e-Thon problem statement. Missing or partial items include a reusable question bank with categories/difficulty and randomization; written responses and manual grading; candidate question navigation and review flags; exam announcements and incident history; PDF and verifiable reports; a candidate-facing sandbox; question import; question analytics; exam-workspace customization; a digital scratchpad; production deployment; and realistic load testing.
 
 ## Local setup (Windows PowerShell)
 
@@ -71,6 +73,10 @@ Administrators can add one account in Django Admin or use **Import users from CS
 
 Open `http://127.0.0.1:8000/` for the landing page. Sign-in is at `/accounts/login/`; Django administration is at `/admin/`.
 
+Cloudflare Turnstile is enabled on sign-in when both `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are configured. For local development, use Cloudflare's published test keys and set `TURNSTILE_TEST_MODE=true`; test keys do not provide production bot protection. Non-debug environments require a live key pair, and test mode is rejected.
+
+The site includes a web app manifest, install icons, and shortcuts for sign-in, candidate exams, and the examiner workspace. On localhost or HTTPS, Chrome can install the site from its install icon or the browser menu; the installed app can then be pinned and its manifest shortcuts used.
+
 Candidates use `/exams/` to view assigned exams. Examiners use `/exams/manage/` to create exams, assign candidates, configure attempt limits and scoring policies, monitor candidates, and publish results. Add at least one active question before publishing an exam. The candidate answer page stores unsent changes in browser IndexedDB and retries them on reconnect; submitted data is still validated and saved by Django.
 
 The `.env` file is local-only and ignored by Git. `COOKIE_SECURE=false` and `DB_SSLMODE=disable` are for local development only. Non-debug settings require HTTPS database transport and a non-superuser database account.
@@ -88,7 +94,7 @@ if ((Get-FileHash .tools\tailwindcss-windows-x64.exe -Algorithm SHA256).Hash.ToL
 
 The standalone binary is local and ignored by Git; the generated CSS is the tracked runtime asset.
 
-Alpine.js 3.17.5 and HTMX 2.0.8 are self-hosted under `static/js/vendor/`; DM Serif Display is self-hosted under `static/fonts/` with its SIL Open Font License. No CDN is used at runtime.
+Alpine.js 3.17.5 and HTMX 2.0.8 are self-hosted under `static/js/vendor/`. The interface uses the system Times New Roman font stack. Cloudflare's Turnstile script is loaded only on sign-in when the CAPTCHA is configured.
 
 ## Tests
 

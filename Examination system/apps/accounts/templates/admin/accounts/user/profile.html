@@ -1,0 +1,71 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_("Django site admin") }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate "Home" %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+    &rsaquo; <a href="{% url 'admin:accounts_user_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+    <p>{{ profile_user.get_role_display }} · {{ profile_user.username }}</p>
+    <div class="module">
+        <h2>Name</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="name">
+            {{ forms.name.as_p }}
+            <div class="submit-row"><input type="submit" value="Save name" class="default"></div>
+        </form>
+    </div>
+    <div class="module">
+        <h2>Photo</h2>
+        {% if profile_user.get_photo_url %}
+            <p><img src="{{ profile_user.get_photo_url }}" alt="{{ profile_user.get_full_name|default:profile_user.username }}" width="160" height="160"></p>
+        {% else %}
+            <p>No photo assigned; the profile displays an initial-letter avatar.</p>
+        {% endif %}
+        <p>JPEG, PNG, or WebP only; maximum upload size 1 MB. The server decodes and re-encodes each image before storing it.</p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="photo">
+            {{ forms.photo.as_p }}
+            <div class="submit-row"><input type="submit" value="Save photo" class="default"></div>
+        </form>
+    </div>
+    <div class="module">
+        <h2>Department</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="department">
+            {{ forms.department.as_p }}
+            <div class="submit-row"><input type="submit" value="Save department" class="default"></div>
+        </form>
+    </div>
+    <div class="module">
+        <h2>Degrees</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="degrees">
+            {{ forms.degrees.as_p }}
+            <div class="submit-row"><input type="submit" value="Save degrees" class="default"></div>
+        </form>
+    </div>
+    <div class="module">
+        <h2>Subjects</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="section" value="subjects">
+            {{ forms.subjects.as_p }}
+            <div class="submit-row"><input type="submit" value="Save subjects" class="default"></div>
+        </form>
+    </div>
+</div>
+{% endblock %}

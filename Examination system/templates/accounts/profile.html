@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My profile | Imtihanify{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <header class="section-heading">
+        <p class="eyebrow">My account</p>
+        <h1>My profile</h1>
+    </header>
+    <section class="ui-card profile-page-card p-6" aria-labelledby="profile-name">
+        <div class="profile-card-avatar profile-page-avatar">
+            {% with photo_url=profile_user.get_photo_url %}
+                {% if photo_url %}
+                    <img src="{{ photo_url }}" alt="{{ profile_user.get_full_name|default:profile_user.username }}" width="120" height="120">
+                {% else %}
+                    <span aria-hidden="true">{{ profile_user.get_full_name|default:profile_user.username|first|upper }}</span>
+                {% endif %}
+            {% endwith %}
+        </div>
+        <div>
+            <h2 id="profile-name" class="text-2xl font-semibold">{{ profile_user.get_full_name|default:profile_user.username }}</h2>
+            <p class="mt-2">{{ profile_user.get_role_display }}</p>
+            <p class="mt-2">
+                {% if profile_user.role == "candidate" %}Registration number:{% else %}Staff ID / username:{% endif %}
+                {{ profile_user.username }}
+            </p>
+            <dl class="profile-details-list mt-5">
+                <div><dt>Department</dt><dd>{{ profile_user.department.name|default:"Not assigned yet" }}</dd></div>
+                <div><dt>Degrees</dt><dd>{% for degree in profile_user.degrees.all %}{{ degree.name }}{% if not forloop.last %}, {% endif %}{% empty %}Not assigned yet{% endfor %}</dd></div>
+                <div><dt>Subjects</dt><dd>{% for subject in profile_user.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% empty %}Not assigned yet{% endfor %}</dd></div>
+            </dl>
+            <p class="mt-5">These details are managed by your administrator. Contact them to request a change.</p>
+        </div>
+    </section>
+</main>
+{% endblock %}

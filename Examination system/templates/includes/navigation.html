@@ -9,11 +9,7 @@
             <a href="{% url 'examiner_dashboard' %}">Examiner workspace</a>
             <a href="{% url 'candidate_directory' %}">Candidate directory</a>
         {% endif %}
-        <span class="nav-user">{{ user.get_full_name|default:user.username }}</span>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button class="ui-button ui-button-secondary ui-button-small" type="submit">Sign out</button>
-        </form>
+        {% include "includes/profile_menu.html" %}
     {% else %}
         <a class="ui-button ui-button-secondary ui-button-small" href="{% url 'login' %}">Sign in</a>
     {% endif %}

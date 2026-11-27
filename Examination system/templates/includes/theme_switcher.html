@@ -1,3 +1,4 @@
+{% load static %}
 <div class="theme-controls" x-data role="group" aria-label="Appearance settings">
     <form class="theme-picker" method="post" action="{% url 'save_theme' %}" {% if user.is_authenticated %}hx-post="{% url 'save_theme' %}" hx-trigger="change" hx-swap="none" hx-sync="this:replace" hx-on::before-request="document.getElementById('theme-preference-status').textContent = 'Saving theme preference.';" hx-on::after-request="document.getElementById('theme-preference-status').textContent = event.detail.successful ? 'Theme saved to your profile.' : 'Theme changed on this device, but profile sync failed.';"{% endif %}>
         {% csrf_token %}
@@ -28,12 +29,11 @@
             </label>
         </fieldset>
     </form>
-    <button class="theme-mode-toggle" type="button" role="switch" aria-label="Toggle dark theme" :aria-checked="$store.theme.current === 'plum'" @click="$store.theme.toggle()">
+    <button class="theme-mode-toggle" type="button" role="switch" :aria-label="$store.theme.current === 'plum' ? 'Switch to light theme' : 'Switch to dark theme'" :aria-checked="$store.theme.current === 'plum'" @click="$store.theme.toggle()">
         <span class="theme-mode-track" aria-hidden="true">
-            <svg x-cloak x-show="$store.theme.current !== 'plum'" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
-            <svg x-cloak x-show="$store.theme.current === 'plum'" viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5a8.6 8.6 0 1 0 12 12z"/></svg>
+            <img class="theme-mode-image" x-cloak x-show="$store.theme.current !== 'plum'" src="{% static 'images/theme-day.png' %}" alt="">
+            <img class="theme-mode-image" x-cloak x-show="$store.theme.current === 'plum'" src="{% static 'images/theme-night.png' %}" alt="">
         </span>
-        <span class="visually-hidden">Toggle dark theme</span>
     </button>
     <p id="theme-preference-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" x-text="$store.theme.status"></p>
 </div>

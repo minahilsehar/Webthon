@@ -1,0 +1,23 @@
+<details class="profile-menu">
+    <summary class="profile-chip">
+        {% with photo_url=user.get_photo_url %}
+            {% if photo_url %}
+                <img class="profile-avatar" src="{{ photo_url }}" alt="">
+            {% else %}
+                <span class="profile-avatar profile-avatar-initial" aria-hidden="true">{{ user.get_full_name|default:user.username|first|upper }}</span>
+            {% endif %}
+        {% endwith %}
+        <span class="profile-chip-copy">
+            <span class="profile-chip-name">{{ user.get_full_name|default:user.username }}</span>
+            <span class="profile-chip-meta">{{ user.get_role_display }} · {{ user.department.name|default:"Not assigned yet" }}</span>
+        </span>
+        <span class="visually-hidden">Open profile menu</span>
+    </summary>
+    <div class="profile-menu-panel">
+        <a href="{% url 'my_profile' %}">My profile</a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Sign out</button>
+        </form>
+    </div>
+</details>

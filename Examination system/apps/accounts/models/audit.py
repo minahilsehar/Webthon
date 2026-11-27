@@ -8,6 +8,7 @@ class AccountAuditLog(models.Model):
         CATALOG_CREATED = "catalog_created", "Catalog item created"
         CATALOG_UPDATED = "catalog_updated", "Catalog item updated"
         CATALOG_DELETED = "catalog_deleted", "Catalog item deleted"
+        PROFILE_UPDATED = "profile_updated", "Profile details updated"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

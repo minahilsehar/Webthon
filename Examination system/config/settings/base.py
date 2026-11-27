@@ -7,6 +7,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
+TURNSTILE_SITE_KEY = os.environ.get("TURNSTILE_SITE_KEY", "").strip()
+TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "").strip()
+TURNSTILE_TEST_MODE = os.environ.get("TURNSTILE_TEST_MODE", "false").lower() == "true"
+TURNSTILE_ENABLED = bool(TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY)
+TURNSTILE_TEST_SITE_KEYS = {
+    "1x00000000000000000000AA",
+    "2x00000000000000000000AB",
+    "1x00000000000000000000BB",
+    "2x00000000000000000000BB",
+    "3x00000000000000000000FF",
+}
+TURNSTILE_TEST_SECRET_KEYS = {
+    "1x0000000000000000000000000000000AA",
+    "2x0000000000000000000000000000000AA",
+    "3x0000000000000000000000000000000AA",
+}
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
@@ -16,6 +32,24 @@ COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 DB_USER = os.environ.get("DB_USER", "webthon_app")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 DB_SSLMODE = os.environ.get("DB_SSLMODE", "disable" if DEBUG else "require").lower()
+
+if bool(TURNSTILE_SITE_KEY) != bool(TURNSTILE_SECRET_KEY):
+    raise ImproperlyConfigured(
+        "Set both TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY."
+    )
+if TURNSTILE_TEST_MODE and not DEBUG:
+    raise ImproperlyConfigured("TURNSTILE_TEST_MODE is only allowed with DEBUG=true.")
+if not DEBUG and not TURNSTILE_ENABLED:
+    raise ImproperlyConfigured(
+        "Set live TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY for non-debug environments."
+    )
+if not DEBUG and (
+    TURNSTILE_SITE_KEY in TURNSTILE_TEST_SITE_KEYS
+    or TURNSTILE_SECRET_KEY in TURNSTILE_TEST_SECRET_KEYS
+):
+    raise ImproperlyConfigured(
+        "Cloudflare Turnstile test keys cannot be used in non-debug environments."
+    )
 
 if not DEBUG:
     if not DB_USER:

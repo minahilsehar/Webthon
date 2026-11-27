@@ -105,5 +105,10 @@ class User(AbstractUser):
         self.email = self.email.strip().lower()
         super().save(*args, **kwargs)
 
+    def get_photo_url(self):
+        from ..services.photos import user_photo_url
+
+        return user_photo_url(self)
+
     def __str__(self):
         return self.username

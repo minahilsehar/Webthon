@@ -129,11 +129,17 @@ def test_public_homepage_and_login_page_render():
     login = client.get("/accounts/login/")
 
     assert home.status_code == 200
+    assert b"Imtihanify" in home.content
+    assert b"Examflow" not in home.content
     assert b'data-theme="ivory"' in home.content
     assert b'data-theme-key="anonymous"' in home.content
     assert b"/static/css/app.css" in home.content
+    assert b'rel="manifest"' in home.content
+    assert b"/static/manifest.json" in home.content
     assert home.content.count(b'name="theme"') == 6
     assert b'role="switch"' in home.content
+    assert b"images/theme-day.png" in home.content
+    assert b"images/theme-night.png" in home.content
     assert b"/static/js/theme-init.js" in home.content
     assert b"/static/js/vendor/htmx.min.js" in home.content
     assert b"/static/js/vendor/alpine.min.js" in home.content

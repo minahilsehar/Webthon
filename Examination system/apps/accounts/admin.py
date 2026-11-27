@@ -3,12 +3,23 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.urls import path
+from django.urls import path, reverse
+from django.utils.html import format_html
 
-from .forms import UserImportForm
+from .forms import (
+    ProfileDegreesForm,
+    ProfileDepartmentForm,
+    ProfileNameForm,
+    ProfilePhotoForm,
+    ProfileSubjectsForm,
+    UserImportForm,
+)
 from .models import AccountAuditLog, Degree, Department, Subject, User
 from .services import create_user
+from .services.photos import update_profile_photo
+from .services.profiles import update_profile_details
 from .services.user_import import import_users
 
 
@@ -26,7 +37,30 @@ class UserAdmin(DjangoUserAdmin):
         ),
     )
     list_display = ("username", "email", "role", "is_staff", "is_active")
+    list_display = (*list_display, "profile_details_link")
     list_filter = ("role", "is_staff", "is_active")
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            return fieldsets
+        filtered = []
+        for title, options in fieldsets:
+            fields = tuple(
+                field
+                for field in options["fields"]
+                if field not in {"first_name", "last_name"}
+            )
+            if fields:
+                filtered.append((title, {**options, "fields": fields}))
+        return filtered
+
+    @admin.display(description="Profile details")
+    def profile_details_link(self, obj):
+        return format_html(
+            '<a href="{}">Manage</a>',
+            reverse("admin:accounts_user_profile", args=(obj.pk,)),
+        )
 
     def has_module_permission(self, request):
         return request.user.is_active and request.user.role == User.Role.ADMIN
@@ -49,6 +83,11 @@ class UserAdmin(DjangoUserAdmin):
                 "import/",
                 self.admin_site.admin_view(self.import_view),
                 name="accounts_user_import",
+            ),
+            path(
+                "<int:user_id>/profile/",
+                self.admin_site.admin_view(self.profile_view),
+                name="accounts_user_profile",
             ),
         ]
         return custom_urls + super().get_urls()
@@ -78,6 +117,79 @@ class UserAdmin(DjangoUserAdmin):
         return TemplateResponse(
             request,
             "admin/accounts/user/import.html",
+            context,
+        )
+
+    def profile_view(self, request, user_id):
+        if not self.has_change_permission(request):
+            return HttpResponseForbidden()
+        profile_user = get_object_or_404(User, pk=user_id)
+        forms = {
+            "name": ProfileNameForm(instance=profile_user),
+            "department": ProfileDepartmentForm(
+                initial={"department": profile_user.department_id}
+            ),
+            "degrees": ProfileDegreesForm(
+                initial={"degrees": profile_user.degrees.all()}
+            ),
+            "subjects": ProfileSubjectsForm(
+                initial={"subjects": profile_user.subjects.all()}
+            ),
+            "photo": ProfilePhotoForm(),
+        }
+
+        if request.method == "POST":
+            section = request.POST.get("section", "")
+            form_types = {
+                "name": ProfileNameForm,
+                "department": ProfileDepartmentForm,
+                "degrees": ProfileDegreesForm,
+                "subjects": ProfileSubjectsForm,
+                "photo": ProfilePhotoForm,
+            }
+            form_type = form_types.get(section)
+            if form_type is None:
+                return HttpResponseForbidden()
+
+            if section == "name":
+                form = form_type(request.POST, instance=profile_user)
+            else:
+                form = form_type(request.POST, request.FILES)
+            forms[section] = form
+            if form.is_valid():
+                try:
+                    if section == "photo":
+                        update_profile_photo(
+                            request.user,
+                            profile_user,
+                            form.cleaned_data["image"],
+                        )
+                    else:
+                        update_profile_details(
+                            request.user,
+                            profile_user,
+                            section=section,
+                            values=form.cleaned_data,
+                        )
+                except ValidationError as error:
+                    form.add_error(None, error)
+                else:
+                    messages.success(request, "Profile details saved.")
+                    return redirect(
+                        "admin:accounts_user_profile",
+                        user_id=profile_user.pk,
+                    )
+
+        context = {
+            **self.admin_site.each_context(request),
+            "opts": self.model._meta,
+            "profile_user": profile_user,
+            "forms": forms,
+            "title": f"Profile details: {profile_user}",
+        }
+        return TemplateResponse(
+            request,
+            "admin/accounts/user/profile.html",
             context,
         )
 

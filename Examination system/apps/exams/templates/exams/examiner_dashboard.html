@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Examiner workspace | Examflow{% endblock %}
+{% block title %}Examiner workspace | Imtihanify{% endblock %}
 {% block content %}
 <main id="main" class="container section-padding">
     <header class="section-heading flex flex-wrap items-end justify-between gap-4">
@@ -9,6 +9,7 @@
         </div>
         <a class="ui-button ui-button-primary" href="{% url 'exam_create' %}">Create an exam</a>
     </header>
+    {% include "includes/profile_card.html" with profile_user=user %}
     <div class="grid gap-5 md:grid-cols-2">
         {% for exam in exams %}
             <article class="ui-card p-6">
