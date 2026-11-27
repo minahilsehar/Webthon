@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.hashers import identify_hasher, make_password
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -19,6 +20,7 @@ from apps.accounts.models import (
 )
 from apps.accounts.controllers.theme import save_theme
 from apps.accounts.services import create_user
+from apps.accounts.services.user_import import import_users
 
 
 def test_user_roles_are_defined():
@@ -247,6 +249,90 @@ def test_admin_user_creation_uses_atomic_service(client):
     created = User.objects.get(username="created-in-admin")
     assert created.check_password("a-Unique-Candidate-Passphrase-94!")
     assert AccountAuditLog.objects.get(target_user=created).actor == administrator
+
+
+@pytest.mark.django_db
+def test_bulk_import_validates_all_rows_then_saves_valid_rows_in_batches():
+    department = Department.objects.create(name="Computing")
+    degree = Degree.objects.create(name="Computer Science")
+    subject = Subject.objects.create(name="Web Technologies")
+    administrator = create_user(username="import-admin", role=User.Role.ADMIN)
+    csv_content = (
+        "username,password,role,email,first_name,last_name,department,degrees,subjects\n"
+        "2026-bulk-001,a-Unique-Bulk-Passphrase-94!,candidate,"
+        "bulk1@example.test,Ada,Student,Computing,Computer Science,Web Technologies\n"
+        "2026-bulk-002,short,candidate,bulk2@example.test,Sam,Student,"
+        "Computing,Computer Science,Web Technologies\n"
+    )
+
+    result = import_users(
+        administrator,
+        SimpleUploadedFile("candidates.csv", csv_content.encode("utf-8")),
+    )
+
+    assert result["total"] == 2
+    assert result["created"] == 1
+    assert result["skipped"] == 0
+    assert result["failed"] == 1
+    assert result["errors"][0]["line"] == 3
+    imported = User.objects.get(username="2026-bulk-001")
+    assert imported.department == department
+    assert list(imported.degrees.all()) == [degree]
+    assert list(imported.subjects.all()) == [subject]
+    assert "password" not in str(AccountAuditLog.objects.get(target_user=imported).details)
+
+    repeated = import_users(
+        administrator,
+        SimpleUploadedFile("candidates.csv", csv_content.encode("utf-8")),
+    )
+    assert repeated["created"] == 0
+    assert repeated["skipped"] == 1
+    assert User.objects.filter(username="2026-bulk-001").count() == 1
+
+
+@pytest.mark.django_db
+def test_bulk_import_admin_page_uses_account_creation_service(client):
+    administrator = create_user(
+        username="import-page-admin",
+        role=User.Role.ADMIN,
+        is_staff=True,
+        is_superuser=True,
+    )
+    client.force_login(administrator)
+    csv_content = (
+        "username,password,role\n"
+        "2026-page-001,a-Unique-Page-Passphrase-94!,candidate\n"
+    )
+
+    response = client.post(
+        "/admin/accounts/user/import/",
+        {
+            "csv_file": SimpleUploadedFile(
+                "users.csv",
+                csv_content.encode("utf-8"),
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert User.objects.filter(username="2026-page-001").exists()
+    assert b"Created: 1" in response.content
+
+
+@pytest.mark.django_db
+def test_bulk_import_rejects_more_than_twenty_rows_without_saving():
+    rows = ["username,password,role"] + [
+        f"2026-limit-{number},a-Unique-Import-Passphrase-94!,candidate"
+        for number in range(21)
+    ]
+
+    with pytest.raises(ValidationError, match="more than 20 user rows"):
+        import_users(
+            None,
+            SimpleUploadedFile("users.csv", "\n".join(rows).encode("utf-8")),
+        )
+
+    assert User.objects.count() == 0
 
 
 @pytest.mark.django_db

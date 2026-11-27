@@ -1,13 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.http import HttpResponseForbidden
+from django.template.response import TemplateResponse
+from django.urls import path
 
+from .forms import UserImportForm
 from .models import AccountAuditLog, Degree, Department, Subject, User
 from .services import create_user
+from .services.user_import import import_users
 
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
+    change_list_template = "admin/accounts/user/change_list.html"
     fieldsets = DjangoUserAdmin.fieldsets + (
         ("Role", {"fields": ("role",)}),
         ("Preferences", {"fields": ("theme",)}),
@@ -35,6 +42,44 @@ class UserAdmin(DjangoUserAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def get_urls(self):
+        custom_urls = [
+            path(
+                "import/",
+                self.admin_site.admin_view(self.import_view),
+                name="accounts_user_import",
+            ),
+        ]
+        return custom_urls + super().get_urls()
+
+    def import_view(self, request):
+        if not self.has_add_permission(request):
+            return HttpResponseForbidden()
+
+        form = UserImportForm(request.POST or None, request.FILES or None)
+        result = None
+        if request.method == "POST" and form.is_valid():
+            try:
+                result = import_users(
+                    request.user,
+                    form.cleaned_data["csv_file"],
+                )
+            except ValidationError as error:
+                form.add_error("csv_file", error)
+
+        context = {
+            **self.admin_site.each_context(request),
+            "form": form,
+            "opts": self.model._meta,
+            "title": "Import users from CSV",
+            "result": result,
+        }
+        return TemplateResponse(
+            request,
+            "admin/accounts/user/import.html",
+            context,
+        )
 
     def save_model(self, request, obj, form, change):
         if change:

@@ -67,6 +67,8 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
 
 Demo data is created through the same atomic account-creation service used by account creation in Django Admin. User identifiers are normalized to lowercase and unique without regard to case. Departments, degrees, and subjects are database-backed, can be managed separately in Django Admin, and cannot be deleted while assigned. Catalog changes and account creation are recorded in the account audit log.
 
+Administrators can add one account in Django Admin or use **Import users from CSV** on the user list. CSV files require `username,password,role`; `email`, `first_name`, `last_name`, `department`, `degrees`, and `subjects` are optional. Separate multiple degrees or subjects with semicolons. Passwords must pass the configured Django validators. Each request is limited to 20 users and 512 KB; larger imports are rejected without truncation because this project does not configure a background worker. The import reports created, skipped, and failed rows with their CSV line numbers.
+
 Open `http://127.0.0.1:8000/` for the landing page. Sign-in is at `/accounts/login/`; Django administration is at `/admin/`.
 
 Candidates use `/exams/` to view assigned exams. Examiners use `/exams/manage/` to create exams, assign candidates, configure attempt limits and scoring policies, monitor candidates, and publish results. Add at least one active question before publishing an exam. The candidate answer page stores unsent changes in browser IndexedDB and retries them on reconnect; submitted data is still validated and saved by Django.
