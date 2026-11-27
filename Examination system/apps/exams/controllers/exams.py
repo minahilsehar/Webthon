@@ -58,6 +58,29 @@ def examiner_dashboard(request):
 
 
 @role_required(User.Role.EXAMINER)
+def candidate_directory(request):
+    candidates = User.objects.filter(
+        role=User.Role.CANDIDATE,
+        is_active=True,
+    ).select_related("department").prefetch_related("degrees", "subjects")
+    search = request.GET.get("q", "").strip()
+    if search:
+        candidates = candidates.filter(
+            Q(username__icontains=search)
+            | Q(first_name__icontains=search)
+            | Q(last_name__icontains=search)
+        )
+    page = Paginator(candidates.order_by("last_name", "first_name", "username"), 50).get_page(
+        request.GET.get("page")
+    )
+    return render(
+        request,
+        "exams/candidate_directory.html",
+        {"page": page, "search": search},
+    )
+
+
+@role_required(User.Role.EXAMINER)
 def create_exam(request):
     form = ExamForm(request.POST or None)
     if request.method == "POST" and form.is_valid():

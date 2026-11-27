@@ -75,6 +75,34 @@ def test_start_attempt_creates_snapshot_and_audit_entry(exam_setup):
 
 
 @pytest.mark.django_db
+def test_candidate_directory_is_examiner_only_and_searches_live_users(client):
+    examiner = User.objects.create_user(
+        username="directory-examiner",
+        role=User.Role.EXAMINER,
+    )
+    matching = User.objects.create_user(
+        username="2026-live-001",
+        first_name="Maya",
+        last_name="Candidate",
+    )
+    other = User.objects.create_user(
+        username="2026-live-002",
+        first_name="Other",
+        last_name="Person",
+    )
+
+    client.force_login(examiner)
+    response = client.get(reverse("candidate_directory"), {"q": "Maya"})
+
+    assert response.status_code == 200
+    assert matching.username.encode() in response.content
+    assert other.username.encode() not in response.content
+
+    client.force_login(matching)
+    assert client.get(reverse("candidate_directory")).status_code == 403
+
+
+@pytest.mark.django_db
 def test_start_attempt_resumes_active_attempt_without_consuming_another(exam_setup):
     _examiner, candidate, exam, _enrollment, _question = exam_setup
 

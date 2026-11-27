@@ -7,6 +7,7 @@
             <a href="{% url 'candidate_dashboard' %}">My exams</a>
         {% elif user.role == "examiner" %}
             <a href="{% url 'examiner_dashboard' %}">Examiner workspace</a>
+            <a href="{% url 'candidate_directory' %}">Candidate directory</a>
         {% endif %}
         <span class="nav-user">{{ user.get_full_name|default:user.username }}</span>
         <form method="post" action="{% url 'logout' %}">

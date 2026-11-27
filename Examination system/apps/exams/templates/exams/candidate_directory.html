@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Candidate directory | Examflow{% endblock %}
+{% block content %}
+<main id="main" class="container section-padding">
+    <header class="section-heading">
+        <p class="eyebrow">Examiner workspace</p>
+        <h1>Candidate directory</h1>
+        <p>Search active candidate accounts and review their assigned academic details.</p>
+    </header>
+    <form method="get" role="search" class="ui-card mb-6 grid gap-3 p-5 sm:grid-cols-[1fr_auto]">
+        <label class="sr-only" for="candidate-search">Search candidates</label>
+        <input id="candidate-search" class="ui-input w-full" type="search" name="q" value="{{ search }}" placeholder="Name or registration number">
+        <button class="ui-button ui-button-primary" type="submit">Search</button>
+    </form>
+    <section class="grid gap-4" aria-label="Candidate results">
+        {% for candidate in page %}
+            <article class="ui-card p-5">
+                <h2 class="text-lg font-semibold">{{ candidate.get_full_name|default:candidate.username }}</h2>
+                <dl class="mt-3 grid gap-2 sm:grid-cols-2">
+                    <div><dt class="font-semibold">Registration number</dt><dd>{{ candidate.username }}</dd></div>
+                    <div><dt class="font-semibold">Department</dt><dd>{{ candidate.department.name|default:"Not assigned yet" }}</dd></div>
+                    <div><dt class="font-semibold">Degrees</dt><dd>{% for degree in candidate.degrees.all %}{{ degree.name }}{% if not forloop.last %}, {% endif %}{% empty %}Not assigned yet{% endfor %}</dd></div>
+                    <div><dt class="font-semibold">Subjects</dt><dd>{% for subject in candidate.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% empty %}Not assigned yet{% endfor %}</dd></div>
+                </dl>
+            </article>
+        {% empty %}
+            <p class="ui-card p-5">No active candidates match this search.</p>
+        {% endfor %}
+    </section>
+    {% if page.has_other_pages %}
+        <nav class="mt-6 flex items-center justify-between" aria-label="Candidate directory pages">
+            {% if page.has_previous %}
+                <a class="ui-button ui-button-secondary" href="?q={{ search|urlencode }}&page={{ page.previous_page_number }}">Previous</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+            <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+            {% if page.has_next %}
+                <a class="ui-button ui-button-secondary" href="?q={{ search|urlencode }}&page={{ page.next_page_number }}">Next</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+        </nav>
+    {% endif %}
+</main>
+{% endblock %}

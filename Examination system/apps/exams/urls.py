@@ -5,6 +5,7 @@ from .controllers import exams as views
 urlpatterns = [
     path("", views.candidate_dashboard, name="candidate_dashboard"),
     path("manage/", views.examiner_dashboard, name="examiner_dashboard"),
+    path("manage/candidates/", views.candidate_directory, name="candidate_directory"),
     path("manage/new/", views.create_exam, name="exam_create"),
     path("manage/<int:exam_id>/", views.manage_exam, name="exam_manage"),
     path(
