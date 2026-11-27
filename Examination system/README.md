@@ -16,7 +16,7 @@ The application uses Django 5, PostgreSQL, Django templates, and session-based a
 
 The public landing page and sign-in screen are responsive, with local artwork and a six-theme appearance picker. Examiner workflows support exam settings, objective-choice questions, candidate enrollment, basic attempt monitoring, and result publication. Candidate workflows support assigned exams, server-enforced attempt limits and deadlines, resume, answer snapshots, autosave, an IndexedDB offline queue, submission, and published attempt history.
 
-This is not yet a complete implementation of the Web-e-Thon problem statement. Missing or partial items include a reusable question bank with categories/difficulty and randomization; written responses and manual grading; candidate question navigation and review flags; exam announcements and incident history; PDF and verifiable reports; a candidate-facing sandbox; question import; question analytics; exam-workspace customization; a digital scratchpad; production deployment; and realistic load testing.
+This is not yet a complete implementation of the Web-e-Thon problem statement. Missing or partial items include a reusable question bank with categories/difficulty and randomization; written responses and manual grading; candidate question navigation and review flags; exam announcements and incident history; PDF and verifiable reports; a candidate-facing sandbox; question import; question analytics; and realistic production load testing.
 
 ## Local setup (Windows PowerShell)
 
@@ -112,4 +112,29 @@ pytest
 - [Testing guide](Testing.md)
 - [Glossary](Glossary.md)
 
-Deployment configuration is intentionally not included in this implementation step.
+## Deploy to Vercel
+
+Vercel detects this Django project from `manage.py`, serves the existing WSGI application, and collects `STATIC_ROOT` assets during deployment. `.python-version` pins the Vercel runtime to Python 3.12. The project must use the `Examination system` directory as its Vercel Root Directory.
+
+1. Push the repository to a Git provider, import it in Vercel, and set **Root Directory** to `Examination system`.
+2. Create a Neon PostgreSQL database and connect it to Vercel. Set `DATABASE_URL` to Neon’s pooled connection URL; production settings require encrypted PostgreSQL connections and use `CONN_MAX_AGE=0` for serverless requests.
+3. Add these environment variables to Vercel **Production** and **Preview** environments:
+   - `DEBUG=false`
+   - `SECRET_KEY` — a newly generated, private Django secret key.
+   - `DATABASE_URL` — the Neon pooled PostgreSQL connection URL.
+   - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` — live Cloudflare Turnstile keys for the deployed domain.
+   - `TURNSTILE_TEST_MODE=false`
+   - `ALLOWED_HOSTS` — optional comma-separated custom domains; Vercel deployment hostnames are added automatically.
+   - `CSRF_TRUSTED_ORIGINS` — optional comma-separated HTTPS origins for custom domains.
+
+   Never use the local `.env` file or Cloudflare test keys in production. Add credentials through Vercel’s Environment Variables dashboard, not to source control.
+4. After linking the project with the Vercel CLI, apply database migrations and create an administrator from PowerShell:
+
+   ```powershell
+   vercel env run -e production -- .\.venv\Scripts\python.exe manage.py migrate
+   vercel env run -e production -- .\.venv\Scripts\python.exe manage.py createsuperuser
+   ```
+
+5. Deploy from the Vercel dashboard or run `vercel --prod` from the project root. Add any custom domain in Vercel and set its exact host/origin in the environment variables above.
+
+Profile photos are currently stored as small binary values in PostgreSQL, so they remain persistent in Neon without Vercel Blob. The Vercel Blob service is not currently used by the application.

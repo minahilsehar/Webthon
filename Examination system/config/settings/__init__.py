@@ -23,7 +23,9 @@ def load_dotenv():
 
 load_dotenv()
 
-if os.environ.get("DEBUG", "false").lower() == "true":
+if os.environ.get("VERCEL", "").lower() in {"1", "true"}:
+    from .production import *  # noqa: F403
+elif os.environ.get("DEBUG", "false").lower() == "true":
     from .development import *  # noqa: F403
 else:
     from .production import *  # noqa: F403

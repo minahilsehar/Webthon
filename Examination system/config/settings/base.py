@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -106,17 +107,63 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "webthon"),
-        "USER": DB_USER,
-        "PASSWORD": DB_PASSWORD,
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-        "OPTIONS": {"sslmode": DB_SSLMODE},
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+if DATABASE_URL:
+    try:
+        database_url = urlsplit(DATABASE_URL)
+        database_name = unquote(database_url.path.lstrip("/"))
+        database_user = unquote(database_url.username or "")
+        database_password = unquote(database_url.password or "")
+        database_host = database_url.hostname
+        database_port = database_url.port or 5432
+    except ValueError as error:
+        raise ImproperlyConfigured(
+            "DATABASE_URL must be a valid PostgreSQL connection URL."
+        ) from error
+
+    if database_url.scheme not in {"postgres", "postgresql"}:
+        raise ImproperlyConfigured(
+            "DATABASE_URL must use the postgres or postgresql scheme."
+        )
+    if not all((database_name, database_user, database_password, database_host)):
+        raise ImproperlyConfigured(
+            "DATABASE_URL must include a database, username, password, and host."
+        )
+
+    database_options = {
+        key: values[-1]
+        for key, values in parse_qs(database_url.query).items()
     }
-}
+    database_options.setdefault("sslmode", DB_SSLMODE)
+    DB_USER = database_user
+    DB_PASSWORD = database_password
+    DB_HOST = database_host
+    DB_PORT = str(database_port)
+    DB_SSLMODE = database_options["sslmode"].lower()
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": database_name,
+            "USER": DB_USER,
+            "PASSWORD": DB_PASSWORD,
+            "HOST": DB_HOST,
+            "PORT": DB_PORT,
+            "OPTIONS": database_options,
+            "CONN_MAX_AGE": 0,
+        }
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME", "webthon"),
+            "USER": DB_USER,
+            "PASSWORD": DB_PASSWORD,
+            "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+            "OPTIONS": {"sslmode": DB_SSLMODE},
+        }
+    }
 
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = [
