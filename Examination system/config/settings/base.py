@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = os.environ["Secret_Key"]
 DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 TURNSTILE_SITE_KEY = os.environ.get("TURNSTILE_SITE_KEY", "").strip()
 TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "").strip()
@@ -51,18 +51,6 @@ if not DEBUG and (
     raise ImproperlyConfigured(
         "Cloudflare Turnstile test keys cannot be used in non-debug environments."
     )
-
-if not DEBUG:
-    if not DB_USER:
-        raise ImproperlyConfigured("Set DB_USER for non-debug environments.")
-    if not DB_PASSWORD:
-        raise ImproperlyConfigured("Set DB_PASSWORD for non-debug environments.")
-    if DB_USER.lower() == "postgres":
-        raise ImproperlyConfigured("Use a dedicated non-superuser DB_USER, not postgres.")
-    if DB_SSLMODE not in {"require", "verify-ca", "verify-full"}:
-        raise ImproperlyConfigured(
-            "Non-debug database connections must use DB_SSLMODE=require or stronger."
-        )
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -164,6 +152,20 @@ else:
             "OPTIONS": {"sslmode": DB_SSLMODE},
         }
     }
+
+if not DEBUG:
+    if not DB_USER:
+        raise ImproperlyConfigured("Set DB_USER for non-debug environments.")
+    if not DB_PASSWORD:
+        raise ImproperlyConfigured(
+            "Set DB_PASSWORD or DATABASE_URL for non-debug environments."
+        )
+    if DB_USER.lower() == "postgres":
+        raise ImproperlyConfigured("Use a dedicated non-superuser database account.")
+    if DB_SSLMODE not in {"require", "verify-ca", "verify-full"}:
+        raise ImproperlyConfigured(
+            "Non-debug database connections must use SSL mode require or stronger."
+        )
 
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = [
