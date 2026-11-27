@@ -17,12 +17,16 @@ Do not introduce a dependency outside this fixed stack without user approval. Th
 - `templates/`: shared site layout, public landing page, and built-in-auth login template.
 - `static/`: local core and responsive CSS plus SVG artwork.
 - PostgreSQL settings are read from `.env`/environment variables.
+- Django connects using a dedicated application role (never `postgres` in non-debug mode); non-debug database connections require SSL.
 - Django sessions are database-backed. Password hashing prefers Argon2.
 
 ## Security requirements
 
 - Use `AUTH_USER_MODEL = "accounts.User"` before the first migration.
 - Keep secrets out of source control; configure `SECRET_KEY` outside code.
+- Use a dedicated PostgreSQL login for the app and never grant it the PostgreSQL superuser role.
+- Require encrypted PostgreSQL transport outside debug mode; use `verify-full` when the host and CA configuration permit certificate verification.
+- Constrain role values in the database as well as through Django form/model choices.
 - Use `SESSION_COOKIE_HTTPONLY`, `CSRF_COOKIE_HTTPONLY`, and SameSite=Lax.
 - Secure session and CSRF cookies by default; disable Secure only for local HTTP development.
 - Apply backend authorization to every protected examination, attempt, and result operation.

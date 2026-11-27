@@ -22,5 +22,13 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(role__in=("admin", "examiner", "candidate")),
+                name="accounts_user_valid_role",
+            ),
+        ]
+
     def __str__(self):
         return self.username

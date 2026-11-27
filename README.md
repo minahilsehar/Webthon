@@ -6,7 +6,12 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
 
 ## Local setup (Windows PowerShell)
 
-1. Install PostgreSQL and create a local database and user.
+1. Install PostgreSQL and create a dedicated application role and database. Do not configure Django with the PostgreSQL `postgres` superuser:
+
+   ```sql
+   CREATE ROLE webthon_app LOGIN PASSWORD 'choose-a-unique-local-password';
+   CREATE DATABASE webthon OWNER webthon_app;
+   ```
 2. Create and activate a virtual environment:
 
    ```powershell
@@ -20,7 +25,7 @@ The public landing page and sign-in screen are responsive, with screen adjustmen
    python -m pip install -r requirements.txt
    ```
 
-4. Copy `.env.example` to `.env`, generate a unique key with `python -c "import secrets; print(secrets.token_urlsafe(50))"`, then set it and your local PostgreSQL credentials in `.env`.
+4. Copy `.env.example` to `.env`, generate a unique key with `python -c "import secrets; print(secrets.token_urlsafe(50))"`, then set it and your local PostgreSQL credentials in `.env`. For non-debug environments, use a dedicated database role/password and set `DB_SSLMODE=require` or stronger; insecure SSL modes are rejected.
 5. Apply the initial custom-user migration:
 
    ```powershell
@@ -50,7 +55,7 @@ The demo command creates local accounts for all three roles, does not overwrite 
 
 Open `http://127.0.0.1:8000/` for the landing page. Sign-in is at `/accounts/login/`; Django administration is at `/admin/`.
 
-The `.env` file is local-only and ignored by Git. `COOKIE_SECURE=false` is for local HTTP development; set it to `true` behind HTTPS in deployment.
+The `.env` file is local-only and ignored by Git. `COOKIE_SECURE=false` and `DB_SSLMODE=disable` are for local development only. Non-debug settings require HTTPS database transport and a non-superuser database account.
 
 ## Tests
 

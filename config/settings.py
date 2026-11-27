@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -29,6 +31,21 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
+DB_USER = os.environ.get("DB_USER", "webthon_app")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
+DB_SSLMODE = os.environ.get("DB_SSLMODE", "disable" if DEBUG else "require").lower()
+
+if not DEBUG:
+    if not DB_USER:
+        raise ImproperlyConfigured("Set DB_USER for non-debug environments.")
+    if not DB_PASSWORD:
+        raise ImproperlyConfigured("Set DB_PASSWORD for non-debug environments.")
+    if DB_USER.lower() == "postgres":
+        raise ImproperlyConfigured("Use a dedicated non-superuser DB_USER, not postgres.")
+    if DB_SSLMODE not in {"require", "verify-ca", "verify-full"}:
+        raise ImproperlyConfigured(
+            "Non-debug database connections must use DB_SSLMODE=require or stronger."
+        )
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -76,10 +93,11 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME", "webthon"),
-        "USER": os.environ.get("DB_USER", "postgres"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
         "PORT": os.environ.get("DB_PORT", "5432"),
+        "OPTIONS": {"sslmode": DB_SSLMODE},
     }
 }
 

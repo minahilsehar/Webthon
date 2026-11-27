@@ -1,0 +1,165 @@
+:root[data-theme="ivory"] {
+    color-scheme: light;
+    --bg: #F6F1E7;
+    --surface: #FBF8F1;
+    --shadow-light: #FFFFFF;
+    --shadow-dark: #D8CFBD;
+    --text: #2E2A24;
+    --text-muted: #6B6257;
+    --primary: #8A6D3B;
+    --on-primary: #FFFFFF;
+    --accent: #C9A66B;
+    --border: #8A6D3B;
+    --success: #1E6860;
+    --warning: #795000;
+    --danger: #861211;
+    --info: #245D78;
+}
+
+:root[data-theme="lavender"] {
+    color-scheme: light;
+    --bg: #ECE8F6;
+    --surface: #F4F1FA;
+    --shadow-light: #FFFFFF;
+    --shadow-dark: #C9C2DE;
+    --text: #2B2540;
+    --text-muted: #5F587A;
+    --primary: #6B5BB0;
+    --on-primary: #FFFFFF;
+    --accent: #A99BE0;
+    --border: #6B5BB0;
+    --success: #1E6860;
+    --warning: #795000;
+    --danger: #861211;
+    --info: #245D78;
+}
+
+:root[data-theme="mauve"] {
+    color-scheme: light;
+    --bg: #F0E4EA;
+    --surface: #F7EEF2;
+    --shadow-light: #FFFFFF;
+    --shadow-dark: #D3BFC9;
+    --text: #3A2832;
+    --text-muted: #6E5662;
+    --primary: #9B5E7E;
+    --on-primary: #FFFFFF;
+    --accent: #C98FAE;
+    --border: #9B5E7E;
+    --success: #1E6860;
+    --warning: #795000;
+    --danger: #861211;
+    --info: #245D78;
+}
+
+:root[data-theme="rose"] {
+    color-scheme: light;
+    --bg: #FBEAED;
+    --surface: #FFF3F5;
+    --shadow-light: #FFFFFF;
+    --shadow-dark: #E3C3C9;
+    --text: #3D2329;
+    --text-muted: #75505A;
+    --primary: #B5485F;
+    --on-primary: #FFFFFF;
+    --accent: #E58FA1;
+    --border: #B5485F;
+    --success: #1E6860;
+    --warning: #795000;
+    --danger: #861211;
+    --info: #245D78;
+}
+
+:root[data-theme="sage"] {
+    color-scheme: light;
+    --bg: #E6EEE6;
+    --surface: #F0F5F0;
+    --shadow-light: #FFFFFF;
+    --shadow-dark: #BFCDBF;
+    --text: #243126;
+    --text-muted: #4F6153;
+    --primary: #4F7A5C;
+    --on-primary: #FFFFFF;
+    --accent: #8DB89A;
+    --border: #4F7A5C;
+    --success: #1E6860;
+    --warning: #795000;
+    --danger: #861211;
+    --info: #245D78;
+}
+
+:root[data-theme="plum"] {
+    color-scheme: dark;
+    --bg: #2A1F33;
+    --surface: #33263E;
+    --shadow-light: #433352;
+    --shadow-dark: #1C1423;
+    --text: #F3EAF7;
+    --text-muted: #C4B3D0;
+    --primary: #C58BE0;
+    --on-primary: #1C1423;
+    --accent: #E3B6F5;
+    --border: #C58BE0;
+    --success: #82D8C8;
+    --warning: #F0CC78;
+    --danger: #FF938A;
+    --info: #A8C8FF;
+}
+
+:root {
+    --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-display: Georgia, "Times New Roman", serif;
+    --type-xs: 0.75rem;
+    --type-sm: 0.875rem;
+    --type-base: 1rem;
+    --type-lg: 1.125rem;
+    --type-xl: 1.25rem;
+    --type-2xl: 1.5rem;
+    --type-3xl: 1.875rem;
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+    --radius-pill: 999px;
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+    --space-6: 48px;
+    --raised-sm: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    --raised-md: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+    --raised-lg: 14px 14px 28px var(--shadow-dark), -14px -14px 28px var(--shadow-light);
+    --inset-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+    --focus-ring: var(--primary);
+    --transition-control: 160ms ease;
+}
+
+.raised-sm { box-shadow: var(--raised-sm); }
+.raised-md { box-shadow: var(--raised-md); }
+.raised-lg { box-shadow: var(--raised-lg); }
+.inset { box-shadow: var(--inset-shadow); }
+.glass {
+    border: 1px solid var(--shadow-light);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(12px);
+}
+
+:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root { --transition-control: 0ms; }
+    *, *::before, *::after { scroll-behavior: auto !important; }
+}
+
+@media (forced-colors: active) {
+    .raised-sm, .raised-md, .raised-lg, .inset, .glass {
+        border: 1px solid CanvasText;
+        box-shadow: none;
+        forced-color-adjust: auto;
+    }
+
+    :focus-visible { outline-color: Highlight; }
+}

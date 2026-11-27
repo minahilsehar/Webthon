@@ -29,6 +29,23 @@ def test_authentication_security_settings():
     assert settings.CSRF_COOKIE_SAMESITE == "Lax"
 
 
+def test_database_uses_app_role_tls_setting_and_role_constraint():
+    database = settings.DATABASES["default"]
+    assert database["USER"].lower() != "postgres"
+    assert database["OPTIONS"]["sslmode"] in {
+        "disable",
+        "allow",
+        "prefer",
+        "require",
+        "verify-ca",
+        "verify-full",
+    }
+    assert any(
+        constraint.name == "accounts_user_valid_role"
+        for constraint in User._meta.constraints
+    )
+
+
 def test_argon2_is_the_default_password_hasher():
     assert identify_hasher(make_password("test-password")).algorithm == "argon2"
 
@@ -40,6 +57,8 @@ def test_public_homepage_and_login_page_render():
     login = client.get("/accounts/login/")
 
     assert home.status_code == 200
+    assert b'data-theme="ivory"' in home.content
+    assert b"/static/css/tokens.css" in home.content
     assert b'id="platform"' in home.content
     assert b'id="how-it-works"' in home.content
     assert b"/static/css/responsive.css" in home.content

@@ -9,11 +9,13 @@ python manage.py check
 python -m pytest
 ```
 
-The current focused tests cover the user-role choices, candidate default role, core session/cookie settings, and Argon2 as the preferred password hasher. The Django system check has passed. These checks do not require a live PostgreSQL server; database-backed behavior still needs PostgreSQL validation.
+The current focused tests cover the user-role choices and database constraint declaration, candidate default role, session/cookie settings, PostgreSQL role/TLS configuration, and Argon2 as the preferred password hasher. The Django system check has passed. These checks do not require a live PostgreSQL server; database-backed behavior still needs PostgreSQL validation.
+
+The local PostgreSQL connection timed out during this work, so the migration table, applied migration state, actual constraints, and database grants were not inspected. The new user-role constraint migration has not been applied.
 
 ## Before a database-backed run
 
-Configure PostgreSQL and `.env`, then run:
+Configure PostgreSQL and `.env` with a dedicated `webthon_app` login, then run:
 
 ```powershell
 python manage.py makemigrations --check

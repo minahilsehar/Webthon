@@ -1,12 +1,13 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="ivory">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f6f7f2">
     <title>{% block title %}Examflow{% endblock %}</title>
     <link rel="icon" href="{% static 'images/mark.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
     {% block head %}{% endblock %}
